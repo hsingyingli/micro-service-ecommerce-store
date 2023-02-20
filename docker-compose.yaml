@@ -1,0 +1,91 @@
+version: "3"
+services:
+# ===========================================================
+  # Admin Service and Database 
+# ===========================================================
+  admin-service:
+    build: ./admin/backend
+    ports:
+      - "4001:4001"
+    volumes:
+      - ./admin/backend:/app
+      - /app/node_modules 
+    depends_on:
+      - auth-service
+      - product-service
+    restart: on-failure
+
+  admin-db:
+    image: mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+
+# ===========================================================
+  # Auth Service and Database
+# ===========================================================
+  auth-service:
+    build: ./auth-service
+    ports:
+      - "9010:9010"
+    environment:
+      DB_URL: auth-db
+    depends_on:
+      - auth-db
+    restart: on-failure
+
+  auth-db:
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD: testsecret
+      POSTGRES_USER: test
+      POSTGRES_DB: test
+    volumes:
+      - auth-data:/var/lib/postgresql/data 
+  
+# ===========================================================
+  # Product Service and Database
+# ===========================================================
+  
+  product-service:
+    build: ./product-service
+    ports:
+      - "9011:9011"
+    environment:
+      DB_URL: product-db
+    depends_on:
+      - product-db
+      - auth-service
+    restart: on-failure
+
+  product-db:
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD: testsecret
+      POSTGRES_USER: test
+      POSTGRES_DB: test
+    volumes:
+      - product-data:/var/lib/postgresql/data
+
+
+# ===========================================================
+  # Message broker using Rabbit MQ 
+# ===========================================================
+  #rabbitmq:
+    #image: rabbitmq:3.9-alpine
+    #ports:
+      #- "5672:5672"
+    #deploy:
+      #mode: replicated
+      #replicas: 1
+    #volumes:
+      #- rabbitmq-data:/var/lib/rabbitmq
+
+
+volumes:
+  auth-data:
+  product-data:
+  #rabbitmq-data:
+
+
+
