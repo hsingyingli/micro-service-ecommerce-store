@@ -1,7 +1,8 @@
-import { axios } from "@/utils/axios"
 import refreshTokenAPI from "@/utils/refreshTokenAPI"
 import { loginAPI } from "@/utils/userAPI"
-import React, { useEffect, useState, createContext, useCallback } from "react"
+import React, { useEffect, useState, createContext } from "react"
+import { useRouter } from "next/router";
+import { Loading } from "@/components/Loading";
 
 type User = {
   id: number
@@ -34,7 +35,9 @@ interface Props {
 
 const AuthProvider: React.FC<Props> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null)
-  const [isLoading, setIsLoading] = useState<bool>(true)
+  const [isLoading, setIsLoading] = useState<boolean>(true)
+  const router = useRouter()
+  const path = router.asPath
 
   const updateUser = (user: User | null) => {
     setUser(user)
@@ -47,6 +50,12 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
   }
 
   useEffect(() => {
+    const handleFinishRedirect = () => setIsLoading(false)
+    router.events.on("routeChangeComplete", handleFinishRedirect)
+    return () => router.events.off("routeChangeComplete", handleFinishRedirect)
+  }, [])
+
+  useEffect(() => {
     const fetchUser = async () => {
       const user = await refreshTokenAPI()
       setUser(user)
@@ -55,11 +64,42 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
     fetchUser()
   }, [])
 
+  useEffect(() => {
+    setIsLoading(true)
+    const isNotRequiredAuth = path.includes("/login") || path.includes("/signup")
+    const initUser = async () => {
+      const user = await refreshTokenAPI()
+      setUser(user)
+
+      if (user === null && isNotRequiredAuth) {
+        setIsLoading(false)
+      } else if (user === null && !isNotRequiredAuth) {
+        router.push("/login")
+      }
+    }
+
+    if (user === null) {
+      initUser()
+      return
+    }
+
+    if (user !== null && isNotRequiredAuth) {
+      router.push("/")
+    } else {
+      setIsLoading(false)
+    }
+
+  }, [path, user])
+
 
   return (
-    <AuthContext.Provider value={{ user, updateUser, login }}>
-      {children}
-    </AuthContext.Provider>
+    !isLoading ?
+      <Loading />
+      : (
+        <AuthContext.Provider value={{ user, updateUser, login }}>
+          {children}
+        </AuthContext.Provider >
+      )
   )
 }
 
