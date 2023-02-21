@@ -1,5 +1,5 @@
 import refreshTokenAPI from "@/utils/refreshTokenAPI"
-import { loginAPI } from "@/utils/userAPI"
+import { loginAPI, logoutAPI } from "@/utils/userAPI"
 import React, { useEffect, useState, createContext } from "react"
 import { useRouter } from "next/router";
 import { Loading } from "@/components/Loading";
@@ -15,15 +15,14 @@ interface AuthContextInterface {
   user: User | null
   updateUser: (user: User | null) => void
   login: (email: string, password: string) => Promise<Error | null>
+  logout: () => Promise<Error | null>
 }
 
 const initState: AuthContextInterface = {
   user: null,
   updateUser: (user) => { },
-  login: async (email: string, password: string) => {
-    console.log("default login")
-    return null
-  }
+  login: async (email: string, password: string) => null,
+  logout: async () => null,
 }
 
 const AuthContext = createContext<AuthContextInterface>(initState)
@@ -41,6 +40,14 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
 
   const updateUser = (user: User | null) => {
     setUser(user)
+  }
+
+  const logout = async () => {
+    const error = await logoutAPI()
+    if (error === null) {
+      setUser(null)
+    }
+    return error
   }
 
   const login = async (email: string, password: string) => {
@@ -66,37 +73,19 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
 
   useEffect(() => {
     setIsLoading(true)
-    const isNotRequiredAuth = path.includes("/login") || path.includes("/signup")
     const initUser = async () => {
       const user = await refreshTokenAPI()
       setUser(user)
-
-      if (user === null && isNotRequiredAuth) {
-        setIsLoading(false)
-      } else if (user === null && !isNotRequiredAuth) {
-        router.push("/login")
-      }
-    }
-
-    if (user === null) {
-      initUser()
-      return
-    }
-
-    if (user !== null && isNotRequiredAuth) {
-      router.push("/")
-    } else {
       setIsLoading(false)
     }
-
-  }, [path, user])
-
+    initUser()
+  }, [])
 
   return (
     isLoading ?
       <Loading />
       : (
-        <AuthContext.Provider value={{ user, updateUser, login }}>
+        <AuthContext.Provider value={{ user, updateUser, login, logout }}>
           {children}
         </AuthContext.Provider >
       )

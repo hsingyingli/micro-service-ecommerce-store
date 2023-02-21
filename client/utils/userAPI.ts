@@ -28,8 +28,29 @@ const loginAPI = async (email: string, password: string): Promise<LoginSuccessRe
   }
 }
 
+const logoutAPI = async (): Promise<Error | null> => {
+  try {
+    await axios.post("/v1/user/logout", {}, { withCredentials: true })
+    return null
+  } catch (error) {
+    return error as Error
+  }
+}
+
+const signUpAPI = async (username: string, email: string, password: string): Promise<Error | null> => {
+  try {
+    await axios.post("/v1/user", { username, email, password })
+    return null
+  } catch (error) {
+    console.log(error)
+    return error as Error
+  }
+}
+
 export {
-  loginAPI
+  loginAPI,
+  logoutAPI,
+  signUpAPI,
 }
 
 
