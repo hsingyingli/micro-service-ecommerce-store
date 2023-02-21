@@ -3,21 +3,20 @@ import React from "react"
 import Header from "../Headers"
 
 interface Props {
-  title: string
   children: React.ReactNode
 }
 
-const MainLayout: React.FC<Props> = ({ title, children }) => {
+const MainLayout: React.FC<Props> = ({ children }) => {
   return (
     <>
       <Head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="description" content={`Micro-Service-Ecommerce-Store - ${title}`} />
+        <meta name="description" content={`Micro-Service-Ecommerce-Store`} />
         <meta name="author" content="Hsing Ying Li" />
         <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
-        <title>{title}</title>
+        <title>Micro-Service-Ecommerce-Store</title>
       </Head>
-      <div>
+      <div className="w-screen min-h-screen bg-primary-500">
         <Header />
         {children}
       </div>
