@@ -7,6 +7,7 @@ interface Props {
 }
 
 const MainLayout: React.FC<Props> = ({ children }) => {
+
   return (
     <>
       <Head>
@@ -16,9 +17,11 @@ const MainLayout: React.FC<Props> = ({ children }) => {
         <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
         <title>Micro-Service-Ecommerce-Store</title>
       </Head>
-      <div className="w-screen min-h-screen bg-primary-500">
+      <div className="w-screen min-h-screen">
         <Header />
-        {children}
+        <div className="pt-14">
+          {children}
+        </div>
       </div>
     </>
   )
