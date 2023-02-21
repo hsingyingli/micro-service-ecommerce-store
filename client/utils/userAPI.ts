@@ -33,6 +33,7 @@ const logoutAPI = async (): Promise<Error | null> => {
     await axios.post("/v1/user/logout", {}, { withCredentials: true })
     return null
   } catch (error) {
+    console.log(error)
     return error as Error
   }
 }

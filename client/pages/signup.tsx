@@ -36,7 +36,7 @@ const SignUpPage: NextPage = () => {
   return (
     <div className="max-w-sm w-full mx-auto flex flex-col items-center">
       <form
-        className="border-gray-400 border-[1px] rounded-md my-5 w-full"
+        className="border-gray-400 border-[1px] rounded-md my-5 mx-2 w-full"
         onSubmit={handleOnSignUp}
       >
         <div className="m-5 flex flex-col">
