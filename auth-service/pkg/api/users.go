@@ -118,7 +118,7 @@ func (server *Server) LogoutUser(ctx *gin.Context) {
 	_, err := ctx.Cookie("ecommerce-store-refresh-token")
 
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Not authorized"})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
