@@ -1,6 +1,7 @@
 package api
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -17,18 +18,20 @@ type RenewAccessTokenResponse struct {
 func (server *Server) RenewAccessToken(ctx *gin.Context) {
 
 	// check if refresh token is provided or not
-	refreshToken, err := ctx.Cookie("amazon-clone-refresh-token")
-
+	refreshToken, err := ctx.Cookie("ecommerce-store-refresh-token")
 	if err != nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Not authorized"})
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return
 	}
+	log.Println("receive token")
 
 	// verify token
 	payload, err := server.tokenMaker.VerifyToken(refreshToken)
 
 	if err != nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Not authorized"})
+		// invaild token or has expired
+		ctx.SetCookie("ecommerce-store-refresh-token", "", -1, "/", "localhost", false, true)
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return
 	}
 

@@ -108,20 +108,20 @@ func (server *Server) LoginUser(ctx *gin.Context) {
 		Id:          user.ID,
 	}
 	maxage := server.config.REFRESH_TOKEN_DURATION.Microseconds()
-	ctx.SetCookie("amazon-clone-refresh-token", refreshToken, int(maxage), "/", "localhost", false, true)
+	ctx.SetCookie("ecommerce-store-refresh-token", refreshToken, int(maxage), "/", "localhost", false, true)
 
 	// generate token
 	ctx.JSON(http.StatusOK, rsp)
 }
 
 func (server *Server) LogoutUser(ctx *gin.Context) {
-	_, err := ctx.Cookie("amazon-clone-refresh-token")
+	_, err := ctx.Cookie("ecommerce-store-refresh-token")
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Not authorized"})
 		return
 	}
 
-	ctx.SetCookie("refresh_token", "", -1, "/", "localhost", false, true)
+	ctx.SetCookie("ecommerce-store-refresh-token", "", -1, "/", "localhost", false, true)
 	ctx.JSON(http.StatusOK, gin.H{"status": "ok"})
 }
