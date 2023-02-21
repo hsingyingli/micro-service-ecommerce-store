@@ -93,7 +93,7 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
 
 
   return (
-    !isLoading ?
+    isLoading ?
       <Loading />
       : (
         <AuthContext.Provider value={{ user, updateUser, login }}>

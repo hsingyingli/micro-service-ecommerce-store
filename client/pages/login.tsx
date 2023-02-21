@@ -1,12 +1,12 @@
 import { NextPage } from "next";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { useContext, FormEvent, useCallback, useState } from "react";
-import { AuthContext } from "@/store/providers/AuthProvider"
+import { FormEvent, useState } from "react";
 import Link from "next/link";
+import { useAuth } from "@/hooks/useAuth";
 
 const LoginPage: NextPage = () => {
-  const { login } = useContext(AuthContext)
+  const { login } = useAuth()
   const [isSuccess, setIsSuccess] = useState(false)
   const [email, setEmail] = useState("")
   const [pwd, setPwd] = useState("")
@@ -26,7 +26,7 @@ const LoginPage: NextPage = () => {
   }
 
   return (
-    <div className="max-w-sm w-full mx-auto flex flex-col items-center mt-3">
+    <div className="max-w-sm w-full mx-auto flex flex-col items-center">
       <Link href={"/"}>
         <Image
           className="cursor-pointer w-20 md:w-24"
