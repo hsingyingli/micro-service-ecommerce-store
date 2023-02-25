@@ -10,6 +10,10 @@
             - [ ] Account Menu
             - [ ] Cart (if login)
             - [ ] Own product (if login)
+    - [ ] Sell Page
+        - [ ] create product 
+        - [ ] list product 
+        - [ ] filter product
 
 - [ ] Auth Service 
     - [x] Login User API
