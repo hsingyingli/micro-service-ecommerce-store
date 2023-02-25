@@ -3,25 +3,33 @@ import { useRouter } from "next/router";
 import { FormEvent, useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/hooks/useAuth";
+import toast from "react-hot-toast"
 
 const LoginPage: NextPage = () => {
   const { login } = useAuth()
-  const [isSuccess, setIsSuccess] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const router = useRouter()
 
   const handleOnLogin = async (e: FormEvent) => {
     e.preventDefault()
+    setIsLoading(true)
+    const toastId = toast.loading('Loading...');
     const err = await login(email, password)
-
+    setIsLoading(false)
     if (err === null) {
       setEmail("")
       setPassword("")
+      toast.success('Login Account', {
+        id: toastId,
+      });
       router.push("/")
-    } else {
-      setIsSuccess(false)
+      return
     }
+    toast.error('Fail to Login Account', {
+      id: toastId,
+    });
   }
 
   return (
@@ -48,6 +56,7 @@ const LoginPage: NextPage = () => {
           />
           <button
             type="submit"
+            disabled={isLoading}
             className="text-md p-2 bg-secondary-50 hover:bg-secondary-200 transition-colors duration-150 mt-4 rounded-md"
           >
             Continue

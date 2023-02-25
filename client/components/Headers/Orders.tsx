@@ -7,7 +7,7 @@ import Link from "next/link";
 const OrderMenu: React.FC = () => {
   const { user } = useAuth()
   return (
-    <div>
+    <div className="relative z-30">
       <Popover className="relative">
         {({ open }) => (
           <>
@@ -27,8 +27,8 @@ const OrderMenu: React.FC = () => {
               leaveFrom="opacity-100 translate-y-0"
               leaveTo="opacity-0 translate-y-1"
             >
-              <Popover.Panel className="absolute right-0 z-10 mt-3 w-screen max-w-sm px-4 sm:px-0 ">
-                <div className="overflow-hidden rounded-md shadow-lg">
+              <Popover.Panel className="absolute right-0 z-30 mt-3 w-screen max-w-xs px-4 sm:px-0 ">
+                <div className="bg-white overflow-hidden rounded-md shadow-lg">
                   <div className="flex flex-col p-1 gap-2">
                     {user === null ?
                       <Link
