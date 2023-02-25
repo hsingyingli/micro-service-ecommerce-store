@@ -1,10 +1,15 @@
-import { useEffect, useContext } from "react";
+import { useEffect, useContext, useState } from "react";
 import { AuthContext } from "@/store/providers/AuthProvider"
-import { axiosPrivate } from "@/utils/axios";
+import { axiosAuth, axiosProduct } from "@/utils/axios";
 import refreshTokenAPI from "@/utils/refreshTokenAPI";
+import { AxiosInstance } from "axios";
 
-const useAxiosPrivate = () => {
+const useAxiosPrivate = (service: string) => {
   const { user, updateUser } = useContext(AuthContext);
+  const [axiosPrivate, setAxiosPrivate] = useState<AxiosInstance>(() => {
+    if (service === "product") return axiosProduct
+    return axiosAuth
+  })
 
   useEffect(() => {
     const reqIntercept = axiosPrivate.interceptors.request.use(
@@ -25,7 +30,7 @@ const useAxiosPrivate = () => {
           const user = await refreshTokenAPI()
           const accessToken = user?.accessToken
           prevRequest.headers[`Authorization`] = `Bearer ${accessToken}`
-          //updateUser(user)
+          updateUser(user)
           return axiosPrivate(prevRequest)
         }
 
@@ -36,7 +41,7 @@ const useAxiosPrivate = () => {
       axiosPrivate.interceptors.request.eject(reqIntercept)
       axiosPrivate.interceptors.response.eject(resIntercept)
     }
-  }, [user, updateUser])
+  }, [user, updateUser, axiosPrivate])
 
   return axiosPrivate
 }
