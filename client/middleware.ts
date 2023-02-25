@@ -14,12 +14,19 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(url)
   }
 
-
+  // require Auth
+  if (request.nextUrl.pathname.startsWith('/sells') &&
+    !request.cookies.has('ecommerce-store-refresh-token')
+  ) {
+    const url = request.nextUrl.clone()
+    url.pathname = "/"
+    return NextResponse.redirect(url)
+  }
 
   return NextResponse.next()
 }
 
 // See "Matching Paths" below to learn more
 export const config = {
-  matcher: ['/signup', '/login'],
+  matcher: ['/signup', '/login', '/sells/:path*'],
 }
