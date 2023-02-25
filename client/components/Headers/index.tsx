@@ -1,8 +1,8 @@
-import { useAuth } from "@/hooks/useAuth"
+import { SquaresPlusIcon } from "@heroicons/react/24/outline"
 import Link from "next/link"
 import React from "react"
-import { Account } from "./Account"
-import { Order } from "./Orders"
+import { AccountMenu } from "./Account"
+import { OrderMenu } from "./Orders"
 
 const Header: React.FC = () => {
 
@@ -14,8 +14,15 @@ const Header: React.FC = () => {
           <h1 className="font-bold text-3xl">Shop</h1>
         </Link>
         <div className="flex items-center gap-4">
-          <Order />
-          <Account />
+          <Link href={"/sells"} className="inline-flex w-full justify-center 
+            rounded-md bg-secondary-400 p-2 hover:bg-secondary-500 transition-colors duration-150">
+            <SquaresPlusIcon
+              className="h-5 w-5 text-violet-200 hover:text-violet-100"
+              aria-hidden="true"
+            />
+          </Link>
+          <OrderMenu />
+          <AccountMenu />
         </div>
       </div>
     </header>

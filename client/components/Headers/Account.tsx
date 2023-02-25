@@ -4,7 +4,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { UserIcon } from '@heroicons/react/24/outline'
 import Link from "next/link";
 
-const Account: React.FC = () => {
+const AccountMenu: React.FC = () => {
   const { user, logout } = useAuth()
   return (
     <div>
@@ -73,5 +73,5 @@ const Account: React.FC = () => {
 }
 
 export {
-  Account
+  AccountMenu
 }

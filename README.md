@@ -3,10 +3,13 @@
 ## TODO
 
 - [ ] Client
-    - [ ] login Page
-    - [ ] SignUp Page
+    - [x] login Page
+    - [x] SignUp Page
     - [ ] Layout
-
+        - [ ] Header
+            - [ ] Account Menu
+            - [ ] Cart (if login)
+            - [ ] Own product (if login)
 
 - [ ] Auth Service 
     - [x] Login User API
@@ -15,6 +18,9 @@
         
     - [x] Logout User API
         - [x] Clear refresh token in cookie
+
+    - [x] Renew Access Token
+
     - [x] GRPC for auth other micro service
         - [x] define proto file
         - [x] listen and serve grpc server

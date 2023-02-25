@@ -17,9 +17,9 @@ const MainLayout: React.FC<Props> = ({ children }) => {
         <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
         <title>Micro-Service-Ecommerce-Store</title>
       </Head>
-      <div className="w-screen min-h-screen">
+      <div className="w-screen min-h-screen bg-primary-200">
         <Header />
-        <div className="pt-14">
+        <div className="pt-14 max-w-screen-xl mx-auto">
           {children}
         </div>
       </div>
