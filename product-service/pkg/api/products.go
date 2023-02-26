@@ -161,5 +161,18 @@ func (server *Server) CreateProduct(ctx *gin.Context) {
 }
 
 func (server *Server) DeleteProductById(ctx *gin.Context) {
+	user := ctx.MustGet(authorizationPayloadKey).(*User)
+	i := ctx.Query("id")
+	id, err := strconv.Atoi(i)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 
+	err = server.store.DeleteProductById(ctx, int64(id), user.Id)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusNoContent, gin.H{})
 }

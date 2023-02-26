@@ -13,6 +13,7 @@ func (server *Server) setupRouter() {
 			product.POST("", server.CreateProduct)
 			product.GET("", server.GetProduct)
 			product.GET("/all", server.ListProducts)
+			product.DELETE("", server.DeleteProductById)
 		}
 	}
 
