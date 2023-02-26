@@ -1,4 +1,5 @@
 import useAxiosPrivate from "@/hooks/useAxiosPrivate"
+import { useSellProduct } from "@/hooks/useSellProduct"
 import { NextPage } from "next"
 import Image from "next/image"
 import { useRouter } from "next/router"
@@ -15,6 +16,7 @@ const CreateProductPage: NextPage = () => {
   const [description, setDescription] = useState("")
   const axiosPrivate = useAxiosPrivate("product")
   const router = useRouter()
+  const { addProduct } = useSellProduct()
 
   useEffect(() => {
     if (image === undefined) return
@@ -59,6 +61,7 @@ const CreateProductPage: NextPage = () => {
       toast.success('Success', {
         id: toastId,
       });
+      addProduct(res.data)
       router.push("/sells")
     } catch (error) {
       toast.success('Fail', {
