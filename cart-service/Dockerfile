@@ -8,5 +8,5 @@ WORKDIR /app
 COPY ./config ./config
 COPY --from=builder /app/main ./
 
-EXPOSE 9011
+EXPOSE 9012
 CMD ["./main"]
