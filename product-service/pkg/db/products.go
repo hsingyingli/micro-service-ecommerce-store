@@ -30,14 +30,57 @@ func (store *Store) GetProduct(ctx context.Context, id int64) (Product, error) {
 const listProducts = `
   SELECT id, uid, title, price, amount, description, image_data, image_name, image_type, created_at, updated_at
   FROM products 
+  ORDER BY created_at
+  LIMIT $1
+  OFFSET $2
+`
+
+func (store *Store) ListProducts(ctx context.Context, limit int64, offset int64) ([]Product, error) {
+	rows, err := store.db.QueryContext(ctx, listProducts, limit, offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Product{}
+	for rows.Next() {
+		var i Product
+		if err := rows.Scan(
+			&i.ID,
+			&i.UID,
+			&i.Title,
+			&i.Price,
+			&i.Amount,
+			&i.Description,
+			&i.ImageData,
+			&i.ImageName,
+			&i.ImageType,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listOwnProducts = `
+  SELECT id, uid, title, price, amount, description, image_data, image_name, image_type, created_at, updated_at
+  FROM products 
   WHERE uid = $1
   ORDER BY created_at
   LIMIT $2 
   OFFSET $3
 `
 
-func (store *Store) ListProducts(ctx context.Context, uid int64, limit int64, offset int64) ([]Product, error) {
-	rows, err := store.db.QueryContext(ctx, listProducts, uid, limit, offset)
+func (store *Store) ListOwnProducts(ctx context.Context, uid int64, limit int64, offset int64) ([]Product, error) {
+	rows, err := store.db.QueryContext(ctx, listOwnProducts, uid, limit, offset)
 	if err != nil {
 		return nil, err
 	}

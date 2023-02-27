@@ -40,18 +40,39 @@ func (server *Server) GetProduct(ctx *gin.Context) {
 		return
 	}
 
-	rsp := GerProductResponse{
-		product: product,
-	}
-
-	ctx.JSON(http.StatusOK, rsp)
-}
-
-type ListProductsResponse struct {
-	products []db.Product
+	ctx.JSON(http.StatusOK, product)
 }
 
 func (server *Server) ListProducts(ctx *gin.Context) {
+
+	l := ctx.DefaultQuery("limit", "10")
+	o := ctx.DefaultQuery("offset", "0")
+
+	limit, err := strconv.Atoi(l)
+	if err != nil {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
+	}
+	offset, err := strconv.Atoi(o)
+	if err != nil {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
+	}
+	products, err := server.store.ListProducts(ctx, int64(limit), int64(offset))
+
+	if err != nil {
+		if err.Error() == sql.ErrNoRows.Error() {
+			ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+			return
+		}
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, products)
+}
+
+func (server *Server) ListOwnProducts(ctx *gin.Context) {
 	user := ctx.MustGet(authorizationPayloadKey).(*User)
 
 	l := ctx.DefaultQuery("limit", "10")
@@ -67,7 +88,7 @@ func (server *Server) ListProducts(ctx *gin.Context) {
 		ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
 	}
-	products, err := server.store.ListProducts(ctx, user.Id, int64(limit), int64(offset))
+	products, err := server.store.ListOwnProducts(ctx, user.Id, int64(limit), int64(offset))
 
 	if err != nil {
 		if err.Error() == sql.ErrNoRows.Error() {
@@ -77,10 +98,6 @@ func (server *Server) ListProducts(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-
-	//rsp := ListProductsResponse{
-	//products: products,
-	//}
 
 	ctx.JSON(http.StatusOK, products)
 }
