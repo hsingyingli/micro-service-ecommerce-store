@@ -44,7 +44,7 @@ type CreateCartRequest struct {
 	Amount int64 `json:"amount" binding:"required"`
 }
 
-func (server *Server) CreateProduct(ctx *gin.Context) {
+func (server *Server) CreateCart(ctx *gin.Context) {
 	user := ctx.MustGet(authorizationPayloadKey).(*User)
 
 	var req CreateCartRequest

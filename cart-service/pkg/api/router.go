@@ -10,7 +10,10 @@ func (server *Server) setupRouter() {
 		// check if vailded access token is provided
 		cart.Use(authMiddleware(server.config.GRPC_URL))
 		{
+			cart.GET("", server.ListOwnCarts)
+			cart.POST("", server.CreateCart)
+			cart.PATCH("", server.UpdateCart)
+			cart.DELETE("", server.DeleteCartById)
 		}
 	}
-
 }
