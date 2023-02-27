@@ -26,5 +26,9 @@ func VerifyToken(ctx *gin.Context, grpcURL string, token string) (*proto.AuthRes
 		Token: token,
 	})
 
+	if err := conn.Close(); err != nil {
+		return nil, err
+	}
+
 	return response, err
 }
