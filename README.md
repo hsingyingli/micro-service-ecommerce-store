@@ -7,13 +7,19 @@
     - [x] SignUp Page
     - [ ] Layout
         - [ ] Header
-            - [ ] Account Menu
-            - [ ] Cart (if login)
-            - [ ] Own product (if login)
+            - [x] Account Menu
+            - [ ] Cart (if login      )
+            - [x] Own product (if login)
+    - [ ] Home Page (Practice infinite scroll)
     - [ ] Sell Page
-        - [ ] create product 
-        - [ ] list product 
-        - [ ] filter product
+        - [x] create product 
+        - [x] list product 
+        - [x] filter product
+        - [ ] edit product
+        - [x] delete product 
+        - [x] link to product page
+    - [ ] Product Page 
+        
 
 - [ ] Auth Service 
     - [x] Login User API
@@ -30,6 +36,11 @@
         - [x] listen and serve grpc server
 
 - [ ] Product Service
+    - [x] Auth middleware which ask auth service for verify access token via GRPC 
+    - [x] List Own product 
+    - [x] delete own product
+    - [x] list all product 
+
 
 
 

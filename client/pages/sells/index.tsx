@@ -23,7 +23,7 @@ const SellsPage: NextPage = () => {
   const handleOnDelete = async (id: number) => {
     const toastId = toast.loading("Deleting...")
     try {
-      const res = await axiosPrivate.delete(`/v1/product?id=${id}`)
+      await axiosPrivate.delete(`/v1/auth/product?id=${id}`)
       toast.success('Deleted', {
         id: toastId,
       });
@@ -46,20 +46,21 @@ const SellsPage: NextPage = () => {
       <div className="mt-10 flex gap-5 flex-wrap">
         {
           displayProducts.map((product) => (
-            <div className="rounded-md border-2 border-primary-500 overflow-hidden
+            <div key={product.id}
+              className="rounded-md border-2 border-primary-500 overflow-hidden
               w-full max-w-[15rem] hover:shadow-xl hover:shadow-primary-500">
               <ProductCard product={product} />
               <div className="flex flex-row gap-2 px-2 pb-1">
-                <button>
+                <Link href={`/sells/edit/${product.id}`}>
                   <PencilSquareIcon
                     className="w-5 h-5 text-secondary-500 hover:text-secondary-700"
                   />
-                </button>
-                <button>
+                </Link>
+                <Link href={`/product/${product.id}`}>
                   <ArrowTopRightOnSquareIcon
                     className="w-5 h-5 text-secondary-500 hover:text-secondary-700"
                   />
-                </button>
+                </Link>
                 <button onClick={() => handleOnDelete(product.id)}>
                   <TrashIcon
                     className="w-5 h-5 text-secondary-500 hover:text-secondary-700"

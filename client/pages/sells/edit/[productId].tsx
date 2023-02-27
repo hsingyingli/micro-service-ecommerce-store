@@ -17,6 +17,7 @@ const CreateProductPage: NextPage = () => {
   const axiosPrivate = useAxiosPrivate("product")
   const router = useRouter()
   const { addProduct } = useSellProduct()
+  const { productId } = router.query
 
   useEffect(() => {
     if (image === undefined) return
@@ -52,7 +53,7 @@ const CreateProductPage: NextPage = () => {
     formData.append('description', description)
 
     try {
-      const res = await axiosPrivate.post('/v1/auth/product', formData, {
+      const res = await axiosPrivate.post('/v1/product', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }

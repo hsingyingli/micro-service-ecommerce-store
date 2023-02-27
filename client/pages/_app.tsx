@@ -1,5 +1,6 @@
 import { MainLayout } from '@/components/Layouts'
 import AuthProvider from '@/store/providers/AuthProvider'
+import { CartProvider } from '@/store/providers/CartProvider';
 import SellProvider from '@/store/providers/SellProvider';
 import '@/styles/globals.css'
 import type { AppProps } from 'next/app'
@@ -10,9 +11,11 @@ export default function App({ Component, pageProps }: AppProps) {
     <>
       <AuthProvider>
         <SellProvider>
-          <MainLayout>
-            <Component {...pageProps} />
-          </MainLayout>
+          <CartProvider>
+            <MainLayout>
+              <Component {...pageProps} />
+            </MainLayout>
+          </CartProvider>
         </SellProvider>
       </AuthProvider>
       <Toaster />

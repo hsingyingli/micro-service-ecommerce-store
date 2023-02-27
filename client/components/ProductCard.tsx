@@ -8,7 +8,7 @@ interface Props {
 
 const ProductCard: React.FC<Props> = ({ product }) => {
   return (
-    <div className="w-full overflow-hidden">
+    <div className="w-full h-full ">
       <div className="relative w-full aspect-[4/3] ">
         <Image
           fill alt={product.title} src={`data:image/${product.image_type};base64,${product.image_data}`} />

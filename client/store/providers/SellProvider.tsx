@@ -46,7 +46,7 @@ const SellProvider: React.FC<Props> = ({ children }) => {
 
     const fetchSellProduct = async () => {
       try {
-        const res = await axiosPrivate.get("/v1/product/all")
+        const res = await axiosPrivate.get("/v1/auth/product/all")
         setProducts(res.data as Array<Product>)
         console.log(res.data)
       } catch (error) {
