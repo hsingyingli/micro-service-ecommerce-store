@@ -42,14 +42,8 @@ const listCarts = `
   OFFSET $3
 `
 
-type ListCartsParam struct {
-	UID    int64
-	Limit  int64
-	Offset int64
-}
-
-func (store *Store) ListCarts(ctx context.Context, args ListCartsParam) ([]CartDetail, error) {
-	rows, err := store.db.QueryContext(ctx, listCarts, args.UID, args.Limit, args.Offset)
+func (store *Store) ListCarts(ctx context.Context, uid int64, limit int64, offset int64) ([]CartDetail, error) {
+	rows, err := store.db.QueryContext(ctx, listCarts, uid, limit, offset)
 	if err != nil {
 		return nil, err
 	}
@@ -85,13 +79,13 @@ func (store *Store) ListCarts(ctx context.Context, args ListCartsParam) ([]CartD
 
 const updateCart = `
   UPDATE carts
-  SET amount = $2
-  WHERE id = $1
+  SET amount = $3
+  WHERE id = $1 and uid = $2
   RETURNING id, uid, pid, amount, created_at, updated_at
 `
 
-func (store *Store) UpdateCart(ctx context.Context, id int64, amount int64) (Cart, error) {
-	row := store.db.QueryRowContext(ctx, updateCart, id, amount)
+func (store *Store) UpdateCart(ctx context.Context, id int64, uid int64, amount int64) (Cart, error) {
+	row := store.db.QueryRowContext(ctx, updateCart, id, uid, amount)
 	var cart Cart
 	err := row.Scan(
 		&cart.ID,

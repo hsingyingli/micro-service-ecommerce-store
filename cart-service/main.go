@@ -1,12 +1,12 @@
 package main
 
 import (
+	"cart/pkg/api"
+	"cart/pkg/db"
+	"cart/pkg/util"
 	"database/sql"
 	"fmt"
 	"log"
-	"product/pkg/api"
-	"product/pkg/db"
-	"product/pkg/util"
 
 	_ "github.com/lib/pq"
 )

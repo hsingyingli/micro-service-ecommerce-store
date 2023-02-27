@@ -1,10 +1,10 @@
 package grpc
 
 import (
+	"cart/proto"
 	"github.com/gin-gonic/gin"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
-	"product/proto"
 )
 
 func VerifyToken(ctx *gin.Context, grpcURL string, token string) (*proto.AuthResponse, error) {
@@ -25,6 +25,10 @@ func VerifyToken(ctx *gin.Context, grpcURL string, token string) (*proto.AuthRes
 	response, err := client.VerifyToken(ctx, &proto.AuthRequest{
 		Token: token,
 	})
+
+	if err := conn.Close(); err != nil {
+		return nil, err
+	}
 
 	return response, err
 }
