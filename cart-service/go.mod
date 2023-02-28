@@ -5,6 +5,7 @@ go 1.18
 require (
 	github.com/gin-gonic/gin v1.9.0
 	github.com/lib/pq v1.10.7
+	github.com/rabbitmq/amqp091-go v1.7.0
 	github.com/spf13/viper v1.15.0
 	google.golang.org/grpc v1.53.0
 	google.golang.org/protobuf v1.28.1

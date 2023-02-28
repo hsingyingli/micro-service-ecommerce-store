@@ -12,6 +12,7 @@ type Config struct {
 	DB_URL      string `mapstructure:"DB_URL"`
 	PORT        string `mapstructure:"PORT"`
 	GRPC_URL    string `mapstructure:"GRPC_URL"`
+	RABBIT_URL  string `mapstructure:"RABBIT_URL"`
 }
 
 func LoadConfig(path string) (Config, error) {

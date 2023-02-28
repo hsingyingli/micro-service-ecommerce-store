@@ -3,6 +3,7 @@ package main
 import (
 	"cart/pkg/api"
 	"cart/pkg/db"
+	"cart/pkg/rabbitmq"
 	"cart/pkg/util"
 	"database/sql"
 	"fmt"
@@ -31,8 +32,14 @@ func main() {
 	// step 3: registe all db operations
 	store := db.NewStore(conn)
 
+	rabbit, err := rabbitmq.NewRabbit(config.RABBIT_URL, store)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rabbit.Close()
+
 	// step 4: Listen and Serve
-	server := api.NewServer(config, store)
+	server := api.NewServer(config, store, rabbit)
 	err = server.Start(config.PORT)
 	if err != nil {
 		log.Fatal(err)
