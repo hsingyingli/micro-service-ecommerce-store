@@ -4,6 +4,7 @@ import (
 	"authentication/pkg/api"
 	"authentication/pkg/db"
 	"authentication/pkg/grpc"
+	"authentication/pkg/rabbitmq"
 	"authentication/pkg/token"
 	"authentication/pkg/util"
 	"database/sql"
@@ -29,6 +30,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer conn.Close()
 
 	// step 3: registe all db operations
 	store := db.NewStore(conn)
@@ -44,8 +46,15 @@ func main() {
 	// auth operation from other microservices
 	go grpc.GRPCListen(config.GRPC_PORT, tokenMaker)
 
-	// step 6: Listen and Serve
-	server := api.NewServer(config, store, tokenMaker)
+	// step 6: start rabbit mq connection
+
+	rabbit, err := rabbitmq.NewRabbit(config.RABBIT_URL)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rabbit.Close()
+	// step 7: Listen and Serve
+	server := api.NewServer(config, store, tokenMaker, rabbit)
 
 	err = server.Start(config.PORT)
 	if err != nil {

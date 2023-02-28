@@ -3,6 +3,7 @@ package api
 import (
 	"authentication/pkg/db"
 	"authentication/pkg/util"
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -53,6 +54,9 @@ func (server *Server) CreateUser(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, rsp)
+
+	err = server.rabbit.Publisher.UserCreated(ctx, user)
+	log.Println(err)
 }
 
 type LoginUserRequest struct {

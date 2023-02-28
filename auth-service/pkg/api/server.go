@@ -2,6 +2,7 @@ package api
 
 import (
 	"authentication/pkg/db"
+	"authentication/pkg/rabbitmq"
 	"authentication/pkg/token"
 	"authentication/pkg/util"
 
@@ -13,15 +14,17 @@ type Server struct {
 	router     *gin.Engine
 	store      *db.Store
 	tokenMaker token.Maker
+	rabbit     *rabbitmq.Rabbit
 }
 
-func NewServer(config util.Config, store *db.Store, tokenMaker token.Maker) *Server {
+func NewServer(config util.Config, store *db.Store, tokenMaker token.Maker, rabbit *rabbitmq.Rabbit) *Server {
 
 	server := &Server{
 		config:     config,
 		router:     gin.Default(),
 		store:      store,
 		tokenMaker: tokenMaker,
+		rabbit:     rabbit,
 	}
 
 	server.setupRouter()
