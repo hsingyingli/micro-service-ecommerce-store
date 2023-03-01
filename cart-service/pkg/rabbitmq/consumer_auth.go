@@ -1,6 +1,9 @@
 package rabbitmq
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"log"
+)
 
 func (consumer *Consumer) ListenOnAuth() error {
 	err := consumer.ch.ExchangeDeclare(
@@ -45,13 +48,17 @@ func (consumer *Consumer) ListenOnAuth() error {
 			var user UserPayload
 			err = json.Unmarshal(d.Body, &user)
 			if err != nil {
+				log.Println(err)
 				continue
 			}
+
+			log.Println("Message receive: " + d.RoutingKey)
 
 			switch d.RoutingKey {
 			case "user.create":
 				consumer.CreateUser(user)
 			case "user.update":
+				log.Println("Correct Switch Case")
 				err = consumer.UpdateUser(user)
 			case "user.delete":
 				err = consumer.DeleteUser(user.ID)

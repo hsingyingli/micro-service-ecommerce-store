@@ -15,7 +15,7 @@ CREATE TABLE users (
   username varchar(50) not null,
   email varchar(100) not null unique,
   created_at TIMESTAMP not null DEFAULT(now()),
-  updated_at TIMESTAMP not null DEFAULT(not())
+  updated_at TIMESTAMP not null DEFAULT(now())
 );
 
 CREATE TABLE carts (
@@ -23,9 +23,9 @@ CREATE TABLE carts (
   uid bigint NOT null,
   pid bigint NOT null,
   amount int not null,
-  created_at TIMESTAMP not null DEFAULT(not()),
-  updated_at TIMESTAMP not null DEFAULT(not())
-)
+  created_at TIMESTAMP not null DEFAULT(now()),
+  updated_at TIMESTAMP not null DEFAULT(now())
+);
 
 ALTER TABLE "carts" 
 ADD FOREIGN KEY ("uid") 

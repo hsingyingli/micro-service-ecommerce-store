@@ -3,6 +3,7 @@ package rabbitmq
 import (
 	"cart/pkg/db"
 	"context"
+	"log"
 	"time"
 )
 
@@ -26,11 +27,16 @@ func (consumer *Consumer) CreateUser(user UserPayload) error {
 func (consumer *Consumer) UpdateUser(user UserPayload) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
+
+	log.Println(user)
+
 	_, err := consumer.store.UpdateUser(ctx, db.UpdateUserParam{
 		ID:       user.ID,
 		Username: user.Username,
 		Email:    user.Email,
 	})
+
+	log.Println(err)
 	return err
 }
 

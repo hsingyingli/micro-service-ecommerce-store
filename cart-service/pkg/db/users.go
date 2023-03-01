@@ -38,7 +38,7 @@ func (store *Store) CreateUser(ctx context.Context, args CreateUserParam) (User,
 const updateUser = `
   UPDATE users 
   SET username = $2,
-      email = $3
+      email = $3,
       updated_at = $4
   WHERE id = $1
   RETURNING id, username, email, created_at, updated_at

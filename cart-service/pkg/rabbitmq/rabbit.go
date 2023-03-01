@@ -2,6 +2,7 @@ package rabbitmq
 
 import (
 	"cart/pkg/db"
+	"log"
 
 	amqp "github.com/rabbitmq/amqp091-go"
 )
@@ -14,6 +15,10 @@ type Rabbit struct {
 
 func NewRabbit(url string, store *db.Store) (*Rabbit, error) {
 	conn, err := amqp.Dial(url)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	publisher, err := NewPublisher(conn)
 	if err != nil {
 		return nil, err
