@@ -26,10 +26,11 @@ func (server *Server) setupRouter() {
 				authorized.GET("/me")
 
 				// Update User
-				authorized.PATCH("/me")
+				authorized.PATCH("/me", server.UpdateUserInfo)
+				authorized.PATCH("/me/password", server.UpdateUserPassword)
 
 				// DELETE User
-				authorized.DELETE("/me")
+				authorized.DELETE("/me", server.DeleteUser)
 			}
 		}
 	}

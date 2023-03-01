@@ -9,8 +9,10 @@ services:
       - "9010:9010"
     environment:
       DB_URL: auth-db
+      RABBIT_URL: amqp://guest:guest@rabbitmq:5672/
     depends_on:
       - auth-db
+      - rabbitmq
     restart: on-failure
 
   auth-db:
@@ -32,10 +34,14 @@ services:
       - "9011:9011"
     environment:
       DB_URL: product-db
+      RABBIT_URL: amqp://guest:guest@rabbitmq:5672/
     depends_on:
       - product-db
       - auth-service
+      - rabbitmq
     restart: on-failure
+
+
 
   product-db:
     image: postgres
@@ -46,25 +52,53 @@ services:
     volumes:
       - product-data:/var/lib/postgresql/data
 
+ #===========================================================
+  # Cart Service and Database
+ #===========================================================
+      
+  cart-service:
+    build: ./cart-service
+    ports:
+      - "9012:9012"
+    environment:
+      DB_URL: cart-db
+      RABBIT_URL: amqp://guest:guest@rabbitmq:5672/
+    depends_on:
+      - cart-db
+      - auth-service
+      - rabbitmq
+    restart: on-failure
 
-# ===========================================================
-  # Message broker using Rabbit MQ 
-# ===========================================================
-  #rabbitmq:
-    #image: rabbitmq:3.9-alpine
-    #ports:
-      #- "5672:5672"
-    #deploy:
-      #mode: replicated
-      #replicas: 1
-    #volumes:
-      #- rabbitmq-data:/var/lib/rabbitmq
+  cart-db:
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD: testsecret
+      POSTGRES_USER: test
+      POSTGRES_DB: test
+    volumes:
+      - cart-data:/var/lib/postgresql/data
+      
+ #===========================================================
+   #Message broker using Rabbit MQ 
+ #===========================================================
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5673:5672"
+      - "8081:15672"
+    deploy:
+      mode: replicated
+      replicas: 1
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
 
 
 volumes:
   auth-data:
   product-data:
-  #rabbitmq-data:
+  cart-data:
+  rabbitmq-data:
 
 
 

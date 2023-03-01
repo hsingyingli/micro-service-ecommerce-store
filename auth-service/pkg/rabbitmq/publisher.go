@@ -69,3 +69,50 @@ func (publisher *Publisher) UserCreated(ctx context.Context, user db.User) error
 
 	return err
 }
+
+func (publisher *Publisher) UserUpdate(ctx context.Context, user db.User) error {
+	body, err := json.Marshal(UserPayload{
+		ID:       user.ID,
+		Username: user.Username,
+		Email:    user.Email,
+	})
+
+	if err != nil {
+		return err
+	}
+
+	err = publisher.ch.PublishWithContext(ctx,
+		"auth_topic",  // exchange
+		"user.update", // routing key
+		false,         // mandatory
+		false,         // immediate
+		amqp.Publishing{
+			ContentType: "text/plain",
+			Body:        []byte(body),
+		})
+
+	return err
+}
+
+func (publisher *Publisher) UserDelete(ctx context.Context, id int64) error {
+	body, err := json.Marshal(UserPayload{
+		ID: id,
+	})
+
+	if err != nil {
+		return err
+	}
+
+	err = publisher.ch.PublishWithContext(ctx,
+		"auth_topic",  // exchange
+		"user.delete", // routing key
+		false,         // mandatory
+		false,         // immediate
+		amqp.Publishing{
+			ContentType: "text/plain",
+			Body:        []byte(body),
+		})
+
+	return err
+
+}

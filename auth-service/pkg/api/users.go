@@ -3,6 +3,7 @@ package api
 import (
 	"authentication/pkg/db"
 	"authentication/pkg/util"
+	"database/sql"
 	"log"
 	"net/http"
 
@@ -15,7 +16,7 @@ type CreateUserRequest struct {
 	Password string `json:"password" binding:"required"`
 }
 
-type CreateUserResponse struct {
+type UserResponse struct {
 	ID       int64  `json:"id"`
 	Username string `json:"username"`
 	Email    string `json:"email"`
@@ -47,7 +48,7 @@ func (server *Server) CreateUser(ctx *gin.Context) {
 		return
 	}
 
-	rsp := CreateUserResponse{
+	rsp := UserResponse{
 		ID:       user.ID,
 		Username: user.Username,
 		Email:    user.Email,
@@ -82,7 +83,11 @@ func (server *Server) LoginUser(ctx *gin.Context) {
 	user, err := server.store.GetUserByEmail(ctx, req.Email)
 
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		if err.Error() == sql.ErrNoRows.Error() {
+			ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+			return
+		}
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
