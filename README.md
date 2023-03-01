@@ -35,11 +35,24 @@
         - [x] define proto file
         - [x] listen and serve grpc server
 
+    - [x] Setup Rabbit MQ
+        - [x] Publish User.* Message
+
 - [ ] Product Service
     - [x] Auth middleware which ask auth service for verify access token via GRPC 
     - [x] List Own product 
     - [x] delete own product
     - [x] list all product 
+    - [ ] Setup Rabbit MQ
+        - [ ] Publish Product.* Message
+
+- [ ] Cart Service 
+    - [x] Setup Rabbit MQ
+        - [x] Receive User.* message from auth serivce via rabbit MQ
+        - [ ] Receive Product.* message from product serivce via rabbit MQ
+
+    - [ ] Create Cart API
+
 
 
 
