@@ -2,12 +2,10 @@ package api
 
 import (
 	"database/sql"
-	"io/ioutil"
 	"net/http"
-	"path/filepath"
 	"product/pkg/db"
+	"product/pkg/util"
 	"strconv"
-	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -126,24 +124,9 @@ func (server *Server) CreateProduct(ctx *gin.Context) {
 		return
 	}
 
-	// get the image data
-	image, err := file.Open()
+	imageData, imageName, imageType, err := util.ParseImage(file)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-	defer image.Close()
-
-	// get the image type (extension)
-	ext := filepath.Ext(file.Filename)
-	imageType := strings.TrimPrefix(ext, ".")
-
-	// get the image name
-	imageName := strings.TrimSuffix(file.Filename, ext)
-
-	imageData, err := ioutil.ReadAll(image)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -175,11 +158,18 @@ func (server *Server) CreateProduct(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, product)
+
+	server.rabbit.Publisher.ProductCreate(ctx, product)
 }
 
 func (server *Server) DeleteProductById(ctx *gin.Context) {
 	user := ctx.MustGet(authorizationPayloadKey).(*User)
 	i := ctx.Query("id")
+	if i == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "please provide product ID"})
+		return
+	}
+
 	id, err := strconv.Atoi(i)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -192,4 +182,5 @@ func (server *Server) DeleteProductById(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusNoContent, gin.H{})
+	server.rabbit.Publisher.ProductDelete(ctx, int64(id), user.Id)
 }

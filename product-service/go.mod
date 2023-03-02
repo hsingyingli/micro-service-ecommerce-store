@@ -5,7 +5,10 @@ go 1.18
 require (
 	github.com/gin-gonic/gin v1.8.2
 	github.com/lib/pq v1.10.7
+	github.com/rabbitmq/amqp091-go v1.7.0
 	github.com/spf13/viper v1.15.0
+	google.golang.org/grpc v1.53.0
+	google.golang.org/protobuf v1.28.1
 )
 
 require (
@@ -36,8 +39,6 @@ require (
 	golang.org/x/sys v0.4.0 // indirect
 	golang.org/x/text v0.6.0 // indirect
 	google.golang.org/genproto v0.0.0-20230110181048-76db0878b65f // indirect
-	google.golang.org/grpc v1.53.0 // indirect
-	google.golang.org/protobuf v1.28.1 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect

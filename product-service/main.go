@@ -6,6 +6,7 @@ import (
 	"log"
 	"product/pkg/api"
 	"product/pkg/db"
+	"product/pkg/rabbitmq"
 	"product/pkg/util"
 
 	_ "github.com/lib/pq"
@@ -31,8 +32,15 @@ func main() {
 	// step 3: registe all db operations
 	store := db.NewStore(conn)
 
-	// step 4: Listen and Serve
-	server := api.NewServer(config, store)
+	// step 4: Connect to rabbit mq
+	rabbit, err := rabbitmq.NewRabbit(config.RABBIT_URL, store)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rabbit.Close()
+
+	// step 5: Listen and Serve
+	server := api.NewServer(config, store, rabbit)
 	err = server.Start(config.PORT)
 	if err != nil {
 		log.Fatal(err)
