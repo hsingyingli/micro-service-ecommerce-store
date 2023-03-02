@@ -3,6 +3,7 @@ CREATE TABLE products (
   uid bigint not null,
 	title TEXT not null,
 	price int not null,
+  amount int not null,
   image_data BYTEA not null,
   image_name TEXT not null,
   image_type TEXT not null,

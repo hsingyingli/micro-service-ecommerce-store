@@ -29,7 +29,15 @@ func NewRabbit(url string, store *db.Store) (*Rabbit, error) {
 		return nil, err
 	}
 
-	consumer.ListenOnAuth()
+	err = consumer.ListenOnAuth()
+	if err != nil {
+		return nil, err
+	}
+
+	err = consumer.ListenOnProduct()
+	if err != nil {
+		return nil, err
+	}
 
 	rabbit := &Rabbit{
 		Conn:      conn,
@@ -41,7 +49,15 @@ func NewRabbit(url string, store *db.Store) (*Rabbit, error) {
 }
 
 func (rabbit *Rabbit) Close() {
-	rabbit.Conn.Close()
-	rabbit.Publisher.ch.Close()
-	rabbit.Consumer.ch.Close()
+	if rabbit.Conn != nil {
+		rabbit.Conn.Close()
+	}
+
+	if rabbit.Publisher != nil && rabbit.Publisher.ch != nil {
+		rabbit.Publisher.ch.Close()
+	}
+
+	if rabbit.Consumer != nil && rabbit.Consumer.ch != nil {
+		rabbit.Consumer.ch.Close()
+	}
 }
