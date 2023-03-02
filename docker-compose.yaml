@@ -5,6 +5,7 @@ services:
 # ===========================================================
   auth-service:
     build: ./auth-service
+    container_name: auth-service
     ports:
       - "9010:9010"
     environment:
@@ -17,6 +18,7 @@ services:
 
   auth-db:
     image: postgres
+    container_name: auth-db
     environment:
       POSTGRES_PASSWORD: testsecret
       POSTGRES_USER: test
@@ -30,6 +32,7 @@ services:
   
   product-service:
     build: ./product-service
+    container_name: product-service
     ports:
       - "9011:9011"
     environment:
@@ -45,6 +48,7 @@ services:
 
   product-db:
     image: postgres
+    container_name: product-db
     environment:
       POSTGRES_PASSWORD: testsecret
       POSTGRES_USER: test
@@ -58,6 +62,7 @@ services:
       
   cart-service:
     build: ./cart-service
+    container_name: cart-service
     ports:
       - "9012:9012"
     environment:
@@ -71,6 +76,7 @@ services:
 
   cart-db:
     image: postgres
+    container_name: cart-db
     environment:
       POSTGRES_PASSWORD: testsecret
       POSTGRES_USER: test
