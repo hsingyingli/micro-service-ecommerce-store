@@ -61,7 +61,7 @@ func (store *Store) UpdateInventoryStatuTx(ctx context.Context, pid int64, a int
 			return errors.New("Inventory Status went wrong!!")
 		}
 
-		row = tx.QueryRowContext(ctx, updateProductAmount, amount, numUnPaid)
+		row = tx.QueryRowContext(ctx, updateProductAmount, pid, amount, numUnPaid)
 		err = row.Scan(
 			&product.ID,
 			&product.UID,

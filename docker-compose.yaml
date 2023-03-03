@@ -85,14 +85,41 @@ services:
       - cart-data:/var/lib/postgresql/data
       
  #===========================================================
+  # Order Service and Database
+ #===========================================================
+      
+  order-service:
+    build: ./order-service
+    container_name: order-service
+    ports:
+      - "9013:9013"
+    environment:
+      DB_URL: order-db
+      RABBIT_URL: amqp://guest:guest@rabbitmq:5672/
+    depends_on:
+      - order-db
+      - auth-service
+      - rabbitmq
+    restart: on-failure
+
+  order-db:
+    image: postgres
+    container_name: order-db
+    environment:
+      POSTGRES_PASSWORD: testsecret
+      POSTGRES_USER: test
+      POSTGRES_DB: test
+    volumes:
+      - order-data:/var/lib/postgresql/data
+ #===========================================================
    #Message broker using Rabbit MQ 
  #===========================================================
 
   rabbitmq:
     image: rabbitmq:3-management
     ports:
-      - "5673:5672"
-      - "8081:15672"
+      - "5672:5672"
+      - "8082:15672"
     deploy:
       mode: replicated
       replicas: 1
@@ -104,6 +131,7 @@ volumes:
   auth-data:
   product-data:
   cart-data:
+  order-data:
   rabbitmq-data:
 
 

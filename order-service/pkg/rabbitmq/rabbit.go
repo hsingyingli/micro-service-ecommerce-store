@@ -15,6 +15,7 @@ type Rabbit struct {
 
 func NewRabbit(url string, store *db.Store) (rabbit *Rabbit, err error) {
 	rabbit = &Rabbit{}
+	rabbit.store = store
 	rabbit.Conn, err = amqp.Dial(url)
 	if err != nil {
 		return
