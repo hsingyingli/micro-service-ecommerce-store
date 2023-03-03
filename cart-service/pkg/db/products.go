@@ -5,6 +5,19 @@ import (
 	"time"
 )
 
+const getProductAmountById = `
+  SELECT amount 
+  FROM products
+  WHERE id = $1 
+`
+
+func (store *Store) GetProductAmountById(ctx context.Context, id int64) (int64, error) {
+	row := store.db.QueryRowContext(ctx, getProductAmountById, id)
+	var amount int64
+	err := row.Scan(&amount)
+	return amount, err
+}
+
 const createProduct = `
   INSERT INTO products (
     id, uid, title, price, amount, image_data, image_name, image_type 

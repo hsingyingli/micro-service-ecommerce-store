@@ -1,73 +1,77 @@
 package rabbitmq
 
 import (
-	"encoding/json"
-	"log"
+	"cart/pkg/db"
+	"context"
+	"time"
 )
 
-func (consumer *Consumer) ListenOnProduct() error {
-	err := consumer.ch.ExchangeDeclare(
-		"product_topic", // name
-		"topic",         // type
-		true,            // durable
-		false,           // auto-deleted
-		false,           // internal
-		false,           // no-wait
-		nil,             // arguments
-	)
+type ProductPayload struct {
+	ID        int64
+	UID       int64
+	Title     string
+	Price     int64
+	Amount    int64
+	ImageData []byte
+	ImageName string
+	ImageType string
+}
 
-	q, err := consumer.ch.QueueDeclare(
-		"",    // name
-		true,  // durable
-		false, // delete when unused
-		false, // exclusive
-		false, // no-wait
-		nil,   // arguments
-	)
+func (rabbit *Rabbit) ConsumeCreateProduct(product ProductPayload) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
 
-	err = consumer.ch.QueueBind(
-		q.Name,          // queue name
-		"product.*.#",   // routing key
-		"product_topic", // exchange
-		false,
-		nil)
+	_, err := rabbit.store.CreateProduct(ctx, db.CreateProductParam{
+		ID:        product.ID,
+		UID:       product.UID,
+		Title:     product.Title,
+		Price:     product.Price,
+		Amount:    product.Amount,
+		ImageData: product.ImageData,
+		ImageName: product.ImageName,
+		ImageType: product.ImageType,
+	})
+	return err
+}
 
-	msgs, err := consumer.ch.Consume(
-		q.Name, // queue
-		"",     // consumer
-		true,   // auto ack
-		false,  // exclusive
-		false,  // no local
-		false,  // no wait
-		nil,    // args
-	)
+func (rabbit *Rabbit) ConsumeUpdateProductAmount(product ProductPayload) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	err := rabbit.store.UpdateProductAmount(ctx, product.ID, product.Amount)
+	return err
+}
 
-	go func() {
-		for d := range msgs {
-			var err error
-			var product ProductPayload
-			err = json.Unmarshal(d.Body, &product)
-			if err != nil {
-				log.Println(err)
-				continue
-			}
+func (rabbit *Rabbit) ConsumeUpdateProductInfo(product ProductPayload) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	err := rabbit.store.UpdateProductInfo(ctx, db.UpdateProductInfoParam{
+		ID:     product.ID,
+		Title:  product.Title,
+		Price:  product.Price,
+		Amount: product.Amount,
+	})
+	return err
+}
 
-			log.Println("Message receive: " + d.RoutingKey)
+func (rabbit *Rabbit) ConsumeUpdateProductInfoWithImage(product ProductPayload) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	err := rabbit.store.UpdateProductInfoWithImage(ctx, db.UpdateProductInfoWithImageParam{
+		ID:        product.ID,
+		Title:     product.Title,
+		Price:     product.Price,
+		Amount:    product.Amount,
+		ImageData: product.ImageData,
+		ImageName: product.ImageName,
+		ImageType: product.ImageType,
+	})
+	return err
+}
 
-			switch d.RoutingKey {
-			case "product.create":
-				consumer.CreateProduct(product)
-			case "product.delete":
-				err = consumer.DeleteProduct(product.ID, product.UID)
-			case "product.update.amount":
-				err = consumer.UpdateProductAmount(product)
-			case "product.update.info":
-				err = consumer.UpdateProductInfo(product)
-			case "product.update.infoWithImage":
-				err = consumer.UpdateProductInfoWithImage(product)
-			}
-		}
-	}()
+func (rabbit *Rabbit) ConsumeDeleteProduct(id int64, uid int64) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
 
+	err := rabbit.store.DeleteProductById(ctx, id, uid)
 	return err
 }

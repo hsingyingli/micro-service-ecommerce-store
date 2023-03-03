@@ -1,70 +1,47 @@
 package rabbitmq
 
 import (
-	"encoding/json"
+	"cart/pkg/db"
+	"context"
 	"log"
+	"time"
 )
 
-func (consumer *Consumer) ListenOnAuth() error {
-	err := consumer.ch.ExchangeDeclare(
-		"auth_topic", // name
-		"topic",      // type
-		true,         // durable
-		false,        // auto-deleted
-		false,        // internal
-		false,        // no-wait
-		nil,          // arguments
-	)
+type UserPayload struct {
+	ID       int64
+	Username string
+	Email    string
+}
 
-	q, err := consumer.ch.QueueDeclare(
-		"",    // name
-		true,  // durable
-		false, // delete when unused
-		false, // exclusive
-		false, // no-wait
-		nil,   // arguments
-	)
+func (rabbit *Rabbit) ConsumeCreateUser(user UserPayload) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	_, err := rabbit.store.CreateUser(ctx, db.CreateUserParam{
+		ID:       user.ID,
+		Username: user.Username,
+		Email:    user.Email,
+	})
+	return err
+}
 
-	err = consumer.ch.QueueBind(
-		q.Name,       // queue name
-		"user.*",     // routing key
-		"auth_topic", // exchange
-		false,
-		nil)
+func (rabbit *Rabbit) ConsumeUpdateUser(user UserPayload) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
 
-	msgs, err := consumer.ch.Consume(
-		q.Name, // queue
-		"",     // consumer
-		true,   // auto ack
-		false,  // exclusive
-		false,  // no local
-		false,  // no wait
-		nil,    // args
-	)
+	_, err := rabbit.store.UpdateUser(ctx, db.UpdateUserParam{
+		ID:       user.ID,
+		Username: user.Username,
+		Email:    user.Email,
+	})
 
-	go func() {
-		for d := range msgs {
-			var err error
-			var user UserPayload
-			err = json.Unmarshal(d.Body, &user)
-			if err != nil {
-				log.Println(err)
-				continue
-			}
+	log.Println(err)
+	return err
+}
 
-			log.Println("Message receive: " + d.RoutingKey)
+func (rabbit *Rabbit) ConsumeDeleteUser(id int64) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
 
-			switch d.RoutingKey {
-			case "user.create":
-				consumer.CreateUser(user)
-			case "user.update":
-				log.Println("Correct Switch Case")
-				err = consumer.UpdateUser(user)
-			case "user.delete":
-				err = consumer.DeleteUser(user.ID)
-			}
-		}
-	}()
-
+	err := rabbit.store.DeleteUser(ctx, id)
 	return err
 }

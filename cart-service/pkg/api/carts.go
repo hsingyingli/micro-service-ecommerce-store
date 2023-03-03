@@ -54,6 +54,21 @@ func (server *Server) CreateCart(ctx *gin.Context) {
 		return
 	}
 
+	remaining, err := server.store.GetProductAmountById(ctx, req.PID)
+	if err != nil {
+		if err.Error() == sql.ErrNoRows.Error() {
+			ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+			return
+		}
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	if remaining < req.Amount {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "shortage of stock"})
+		return
+	}
+
 	cart, err := server.store.CreateCart(ctx, db.CreateCartParam{
 		UID:    user.Id,
 		PID:    req.PID,
@@ -69,7 +84,7 @@ func (server *Server) CreateCart(ctx *gin.Context) {
 }
 
 type UpdateCartRequest struct {
-	ID     int64 `json:"id" binding:"required"`
+	PID    int64 `json:"pid" binding:"required"`
 	Amount int64 `json:"amount" binding:"required"`
 }
 
@@ -82,7 +97,22 @@ func (server *Server) UpdateCart(ctx *gin.Context) {
 		return
 	}
 
-	cart, err := server.store.UpdateCart(ctx, req.ID, user.Id, req.Amount)
+	remaining, err := server.store.GetProductAmountById(ctx, req.PID)
+	if err != nil {
+		if err.Error() == sql.ErrNoRows.Error() {
+			ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+			return
+		}
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	if remaining < req.Amount {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "shortage of stock"})
+		return
+	}
+
+	cart, err := server.store.UpdateCart(ctx, req.PID, user.Id, req.Amount)
 	if err != nil {
 		if err.Error() == sql.ErrNoRows.Error() {
 			ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})

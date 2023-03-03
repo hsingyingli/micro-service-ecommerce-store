@@ -2,50 +2,36 @@ package rabbitmq
 
 import (
 	"cart/pkg/db"
-	"log"
 
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
 type Rabbit struct {
-	Conn      *amqp.Connection
-	Publisher *Publisher
-	Consumer  *Consumer
+	Conn     *amqp.Connection
+	Consumer *amqp.Channel
+	store    *db.Store
 }
 
-func NewRabbit(url string, store *db.Store) (*Rabbit, error) {
-	conn, err := amqp.Dial(url)
+func NewRabbit(url string, store *db.Store) (rabbit *Rabbit, err error) {
+	rabbit = &Rabbit{}
+	rabbit.store = store
+	rabbit.Conn, err = amqp.Dial(url)
 	if err != nil {
-		log.Fatal(err)
+		return
 	}
 
-	publisher, err := NewPublisher(conn)
+	rabbit.Consumer, err = rabbit.Conn.Channel()
 	if err != nil {
-		return nil, err
+		return
 	}
-	consumer, err := NewConsumer(conn, store)
 
+	err = rabbit.ListenOnAuth()
 	if err != nil {
-		return nil, err
+		return
 	}
+	err = rabbit.ListenOnProduct()
 
-	err = consumer.ListenOnAuth()
-	if err != nil {
-		return nil, err
-	}
-
-	err = consumer.ListenOnProduct()
-	if err != nil {
-		return nil, err
-	}
-
-	rabbit := &Rabbit{
-		Conn:      conn,
-		Publisher: publisher,
-		Consumer:  consumer,
-	}
-
-	return rabbit, nil
+	return
 }
 
 func (rabbit *Rabbit) Close() {
@@ -53,11 +39,7 @@ func (rabbit *Rabbit) Close() {
 		rabbit.Conn.Close()
 	}
 
-	if rabbit.Publisher != nil && rabbit.Publisher.ch != nil {
-		rabbit.Publisher.ch.Close()
-	}
-
-	if rabbit.Consumer != nil && rabbit.Consumer.ch != nil {
-		rabbit.Consumer.ch.Close()
+	if rabbit.Consumer != nil {
+		rabbit.Consumer.Close()
 	}
 }
