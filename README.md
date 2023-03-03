@@ -19,6 +19,12 @@ Simple ecommerce store app built with microservices-based architecture. Technica
 ## Event flow 
 ![Event flow](./public/eventflow.png)
 
+## Authentication
+* Token-based authentication: PASETO
+* Auth Middleware: Provide access token in request header
+* Refresh Token: Verify refresh token stored in http-only cookie
+![authentication](./public/grpc.png)
+
 ## How to use
 ***require docker and make installed***
 
@@ -35,6 +41,7 @@ docker-compose up -d --build
 ```
 
 3. Init required DB
+
 ***Need to wait until all database has been init (docker ps)***
 
 ```
@@ -77,7 +84,7 @@ http://localhost:3000
     - [ ] Product Page 
         
 
-- [ ] Auth Service 
+- [x] Auth Service 
     - [x] Login User API
         - [x] PASETO Token Maker
         - [x] Create Access and Refresh Token
@@ -99,12 +106,23 @@ http://localhost:3000
     - [x] List Own product 
     - [x] delete own product
     - [x] list all product 
-    - [ ] Setup Rabbit MQ
+    - [x] Setup Rabbit MQ
         - [x] Publish Product.* Message
+        - [x] Receive Order.* message from order service via rabbit MQ
 
 - [ ] Cart Service 
     - [x] Setup Rabbit MQ
         - [x] Receive User.* message from auth serivce via rabbit MQ
         - [x] Receive Product.* message from product serivce via rabbit MQ
 
-    - [ ] Create Cart API
+    - [x] Create Cart API
+        - [x] CRUD
+
+- [ ] Order Service
+    - [x] Setup RabbitMQ
+        - [x] Receive User.* message from auth service via rabbit MQ
+        - [x] Receive Product.* message from auth service via rabbit MQ
+        - [x] Publish Order.* message to other service
+    - [x] Create Order API 
+        - [x] CRUD
+
