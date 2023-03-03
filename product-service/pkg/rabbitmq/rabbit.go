@@ -1,7 +1,6 @@
 package rabbitmq
 
 import (
-	"log"
 	"product/pkg/db"
 
 	amqp "github.com/rabbitmq/amqp091-go"
@@ -14,40 +13,32 @@ type Rabbit struct {
 	store     *db.Store
 }
 
-func NewRabbit(url string, store *db.Store) (*Rabbit, error) {
-	conn, err := amqp.Dial(url)
+func NewRabbit(url string, store *db.Store) (rabbit *Rabbit, err error) {
+	rabbit = &Rabbit{}
+	rabbit.store = store
+	rabbit.Conn, err = amqp.Dial(url)
 	if err != nil {
-		log.Fatal(err)
+		return
 	}
 
-	publisher, err := conn.Channel()
+	rabbit.Publisher, err = rabbit.Conn.Channel()
 	if err != nil {
-		return nil, err
+		return
 	}
 
-	consumer, err := conn.Channel()
+	rabbit.Consumer, err = rabbit.Conn.Channel()
 	if err != nil {
-		return nil, err
-	}
-
-	rabbit := &Rabbit{
-		Conn:      conn,
-		Publisher: publisher,
-		Consumer:  consumer,
-		store:     store,
+		return
 	}
 
 	err = rabbit.connectToProductTopic()
 	if err != nil {
-		return nil, err
+		return
 	}
 
 	err = rabbit.listenOnOrder()
-	if err != nil {
-		return nil, err
-	}
 
-	return rabbit, nil
+	return
 }
 
 func (rabbit *Rabbit) Close() {

@@ -9,29 +9,23 @@ type Rabbit struct {
 	Publisher *amqp.Channel
 }
 
-func NewRabbit(url string) (*Rabbit, error) {
-	conn, err := amqp.Dial(url)
+func NewRabbit(url string) (rabbit *Rabbit, err error) {
+	rabbit = &Rabbit{}
+
+	rabbit.Conn, err = amqp.Dial(url)
 
 	if err != nil {
-		return nil, err
+		return
 	}
 
-	publisher, err := conn.Channel()
+	rabbit.Publisher, err = rabbit.Conn.Channel()
 	if err != nil {
-		return nil, err
-	}
-
-	rabbit := &Rabbit{
-		Conn:      conn,
-		Publisher: publisher,
+		return
 	}
 
 	err = rabbit.connectToAuthTopic()
-	if err != nil {
-		return nil, err
-	}
 
-	return rabbit, nil
+	return
 }
 
 func (rabbit *Rabbit) Close() {
