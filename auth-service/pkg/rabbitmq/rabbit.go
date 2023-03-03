@@ -1,24 +1,22 @@
 package rabbitmq
 
 import (
-	"log"
-
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
 type Rabbit struct {
 	Conn      *amqp.Connection
-	Publisher *Publisher
+	Publisher *amqp.Channel
 }
 
 func NewRabbit(url string) (*Rabbit, error) {
 	conn, err := amqp.Dial(url)
 
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
-	publisher, err := NewPublisher(conn)
+	publisher, err := conn.Channel()
 	if err != nil {
 		return nil, err
 	}
@@ -26,6 +24,11 @@ func NewRabbit(url string) (*Rabbit, error) {
 	rabbit := &Rabbit{
 		Conn:      conn,
 		Publisher: publisher,
+	}
+
+	err = rabbit.connectToAuthTopic()
+	if err != nil {
+		return nil, err
 	}
 
 	return rabbit, nil
@@ -36,7 +39,7 @@ func (rabbit *Rabbit) Close() {
 		rabbit.Close()
 	}
 
-	if rabbit.Publisher != nil && rabbit.Publisher.ch != nil {
-		rabbit.Publisher.ch.Close()
+	if rabbit.Publisher != nil {
+		rabbit.Publisher.Close()
 	}
 }

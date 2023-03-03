@@ -2,6 +2,7 @@ package api
 
 import (
 	"authentication/pkg/db"
+	"authentication/pkg/rabbitmq"
 	"authentication/pkg/token"
 	"authentication/pkg/util"
 	"database/sql"
@@ -38,13 +39,24 @@ func (server *Server) UpdateUserInfo(ctx *gin.Context) {
 		return
 	}
 
+	err = server.rabbit.PublishUser(ctx, "user.update", rabbitmq.UserPayload{
+		ID:       newUser.ID,
+		Username: newUser.Username,
+		Email:    newUser.Email,
+	})
+
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
 	rsp := UserResponse{
 		ID:       newUser.ID,
 		Username: newUser.Username,
 		Email:    newUser.Email,
 	}
 	ctx.JSON(http.StatusOK, rsp)
-	server.rabbit.Publisher.UserUpdate(ctx, newUser)
+
 }
 
 type UpdateUserPasswordRequest struct {
@@ -86,7 +98,6 @@ func (server *Server) UpdateUserPassword(ctx *gin.Context) {
 		Email:    newUser.Email,
 	}
 	ctx.JSON(http.StatusOK, rsp)
-	server.rabbit.Publisher.UserUpdate(ctx, newUser)
 }
 
 func (server *Server) DeleteUser(ctx *gin.Context) {
@@ -100,6 +111,16 @@ func (server *Server) DeleteUser(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+
+	err = server.rabbit.PublishUser(ctx, "user.delete", rabbitmq.UserPayload{
+		ID: payload.UID,
+	})
+
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
 	ctx.JSON(http.StatusAccepted, gin.H{})
-	server.rabbit.Publisher.UserDelete(ctx, payload.UID)
+
 }

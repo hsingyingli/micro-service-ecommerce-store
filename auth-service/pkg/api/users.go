@@ -2,9 +2,9 @@ package api
 
 import (
 	"authentication/pkg/db"
+	"authentication/pkg/rabbitmq"
 	"authentication/pkg/util"
 	"database/sql"
-	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -48,6 +48,17 @@ func (server *Server) CreateUser(ctx *gin.Context) {
 		return
 	}
 
+	err = server.rabbit.PublishUser(ctx, "user.create", rabbitmq.UserPayload{
+		ID:       user.ID,
+		Username: user.Username,
+		Email:    user.Email,
+	})
+
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
 	rsp := UserResponse{
 		ID:       user.ID,
 		Username: user.Username,
@@ -56,8 +67,6 @@ func (server *Server) CreateUser(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, rsp)
 
-	err = server.rabbit.Publisher.UserCreated(ctx, user)
-	log.Println(err)
 }
 
 type LoginUserRequest struct {
