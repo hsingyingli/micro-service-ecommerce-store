@@ -4,6 +4,7 @@ CREATE TABLE products (
 	title TEXT not null,
 	price int not null,
   amount int not null,
+  num_unpaid int not null DEFAULT(0),
 	description TEXT not null,
   image_data BYTEA not null,
   image_name TEXT not null,

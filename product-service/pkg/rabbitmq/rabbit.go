@@ -9,8 +9,9 @@ import (
 
 type Rabbit struct {
 	Conn      *amqp.Connection
-	Publisher *Publisher
-	Consumer  *Consumer
+	Publisher *amqp.Channel
+	Consumer  *amqp.Channel
+	store     *db.Store
 }
 
 func NewRabbit(url string, store *db.Store) (*Rabbit, error) {
@@ -19,29 +20,46 @@ func NewRabbit(url string, store *db.Store) (*Rabbit, error) {
 		log.Fatal(err)
 	}
 
-	publisher, err := NewPublisher(conn)
-	if err != nil {
-		return nil, err
-	}
-	consumer, err := NewConsumer(conn, store)
-
+	publisher, err := conn.Channel()
 	if err != nil {
 		return nil, err
 	}
 
-	//consumer.ListenOnAuth()
+	consumer, err := conn.Channel()
+	if err != nil {
+		return nil, err
+	}
 
 	rabbit := &Rabbit{
 		Conn:      conn,
 		Publisher: publisher,
 		Consumer:  consumer,
+		store:     store,
+	}
+
+	err = rabbit.connectToProductTopic()
+	if err != nil {
+		return nil, err
+	}
+
+	err = rabbit.listenOnOrder()
+	if err != nil {
+		return nil, err
 	}
 
 	return rabbit, nil
 }
 
 func (rabbit *Rabbit) Close() {
-	rabbit.Conn.Close()
-	rabbit.Publisher.ch.Close()
-	rabbit.Consumer.ch.Close()
+	if rabbit.Conn != nil {
+		rabbit.Conn.Close()
+	}
+
+	if rabbit.Publisher != nil {
+		rabbit.Publisher.Close()
+	}
+
+	if rabbit.Consumer != nil {
+		rabbit.Consumer.Close()
+	}
 }

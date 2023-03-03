@@ -1,26 +1,70 @@
 package rabbitmq
 
 import (
+	"encoding/json"
+	"log"
 	"product/pkg/db"
-
-	amqp "github.com/rabbitmq/amqp091-go"
 )
 
-type Consumer struct {
-	ch    *amqp.Channel
-	store *db.Store
-}
+func (rabbit *Rabbit) listenOnOrder() error {
+	err := rabbit.Consumer.ExchangeDeclare(
+		"order_topic", // name
+		"topic",       // type
+		true,          // durable
+		false,         // auto-deleted
+		false,         // interna
+		false,         // no-wait
+		nil,           // arguments
+	)
 
-func NewConsumer(conn *amqp.Connection, store *db.Store) (*Consumer, error) {
-	ch, err := conn.Channel()
-	if err != nil {
-		return nil, err
-	}
+	q, err := rabbit.Consumer.QueueDeclare(
+		"",    // name
+		true,  // durable
+		false, // delete when unused
+		false, // exclusive
+		false, // no-wait
+		nil,   // arguments
+	)
 
-	consumer := &Consumer{
-		ch:    ch,
-		store: store,
-	}
+	err = rabbit.Consumer.QueueBind(
+		q.Name,        // queue name
+		"order.*",     // routing key
+		"order_topic", // exchange
+		false,
+		nil)
 
-	return consumer, nil
+	msgs, err := rabbit.Consumer.Consume(
+		q.Name, // queue
+		"",     // consumer
+		true,   // auto ack
+		false,  // exclusive
+		false,  // no local
+		false,  // no wait
+		nil,    // args
+	)
+
+	go func() {
+		for d := range msgs {
+			var err error
+			var order db.OrderPayload
+			err = json.Unmarshal(d.Body, &order)
+			if err != nil {
+				log.Println(err)
+				continue
+			}
+
+			log.Println("Message receive: " + d.RoutingKey)
+
+			switch d.RoutingKey {
+			case "order.create":
+				rabbit.ConsumeCreateOrder(order)
+			case "order.delete":
+				err = rabbit.ConsumeDeleteOrder(order)
+			case "order.finish":
+				err = rabbit.ConsumeFinishOrder(order)
+			}
+		}
+	}()
+
+	return err
 }

@@ -3,7 +3,7 @@ package db
 import "context"
 
 const getProduct = `
-  SELECT id, uid, title, price, amount, description, image_data, image_name, image_type, created_at, updated_at
+  SELECT id, uid, title, price, amount, num_unpaid, description, image_data, image_name, image_type, created_at, updated_at
   FROM products 
   WHERE id = $1
 `
@@ -17,6 +17,7 @@ func (store *Store) GetProduct(ctx context.Context, id int64) (Product, error) {
 		&i.Title,
 		&i.Price,
 		&i.Amount,
+		&i.NumUnPaid,
 		&i.Description,
 		&i.ImageData,
 		&i.ImageName,
@@ -28,7 +29,7 @@ func (store *Store) GetProduct(ctx context.Context, id int64) (Product, error) {
 }
 
 const listProducts = `
-  SELECT id, uid, title, price, amount, description, image_data, image_name, image_type, created_at, updated_at
+  SELECT id, uid, title, price, amount, num_unpaid, description, image_data, image_name, image_type, created_at, updated_at
   FROM products 
   ORDER BY created_at
   LIMIT $1
@@ -50,6 +51,7 @@ func (store *Store) ListProducts(ctx context.Context, limit int64, offset int64)
 			&i.Title,
 			&i.Price,
 			&i.Amount,
+			&i.NumUnPaid,
 			&i.Description,
 			&i.ImageData,
 			&i.ImageName,
@@ -71,7 +73,7 @@ func (store *Store) ListProducts(ctx context.Context, limit int64, offset int64)
 }
 
 const listOwnProducts = `
-  SELECT id, uid, title, price, amount, description, image_data, image_name, image_type, created_at, updated_at
+  SELECT id, uid, title, price, amount, num_unpaid, description, image_data, image_name, image_type, created_at, updated_at
   FROM products 
   WHERE uid = $1
   ORDER BY created_at
@@ -94,6 +96,7 @@ func (store *Store) ListOwnProducts(ctx context.Context, uid int64, limit int64,
 			&i.Title,
 			&i.Price,
 			&i.Amount,
+			&i.NumUnPaid,
 			&i.Description,
 			&i.ImageData,
 			&i.ImageName,
@@ -120,7 +123,7 @@ const createProduct = `
   ) VALUES (
     $1, $2, $3, $4, $5, $6, $7, $8
   )
-  RETURNING id, uid, title, price, amount, description, image_data, image_name, image_type, created_at, updated_at
+  RETURNING id, uid, title, price, amount, num_unpaid, description, image_data, image_name, image_type, created_at, updated_at
 `
 
 type CreateProductParam struct {
@@ -152,6 +155,7 @@ func (store *Store) CreateProduct(ctx context.Context, args CreateProductParam) 
 		&product.Title,
 		&product.Price,
 		&product.Amount,
+		&product.NumUnPaid,
 		&product.Description,
 		&product.ImageData,
 		&product.ImageName,
