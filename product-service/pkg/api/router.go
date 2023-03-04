@@ -7,16 +7,17 @@ func (server *Server) setupRouter() {
 	v1 := server.router.Group("/v1")
 	{
 
-		v1.GET("/product", server.GetProduct)
-		v1.GET("/product/all", server.ListProducts)
+		product := v1.Group("/product")
+		product.GET("", server.GetProduct)
+		product.GET("/all", server.ListProducts)
 
-		product := v1.Group("/auth/product")
+		auth := product.Group("/auth")
 		// check if vailded access token is provided
-		product.Use(authMiddleware(server.config.GRPC_URL))
+		auth.Use(authMiddleware(server.config.GRPC_URL))
 		{
-			product.POST("", server.CreateProduct)
-			product.GET("/all", server.ListOwnProducts)
-			product.DELETE("", server.DeleteProductById)
+			auth.POST("", server.CreateProduct)
+			auth.GET("/all", server.ListOwnProducts)
+			auth.DELETE("", server.DeleteProductById)
 		}
 	}
 
