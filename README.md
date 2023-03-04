@@ -5,7 +5,9 @@ Simple ecommerce store app built with microservices-based architecture. Technica
 ## Table of contents
 * [Technical Stack](#technical-stack)
 * [Event flow](#event-flow)
+* [Authentication](#authentication)
 * [How to use](#how-to-use)
+* [API Endpoint](#api-endpoint)
 * [Todo List](#todo)
 
 ## Technical Stack 
@@ -52,6 +54,45 @@ make init_db
 ```
 http://localhost:3000
 ```
+## API Endpoint
+* Auth Service:
+    |Method|ROUTE|
+    |---|---|
+    |POST|/v1/user|
+    |POST |/v1/user|
+    |POST |/v1/user/login|
+    |POST |/v1/user/logout|
+    |POST |/v1/user/renew_access|
+    |GET |/v1/user/auth/m1|
+    |PATCH |/v1/user/auth/me |
+    |PATCH |/v1/user/auth/me/password|
+    |DELETE |/v1/user/auth/me|
+* Product Service:
+    |Method|ROUTE|
+    |---|---|
+    |GET |/v1/product?id=|
+    |GET |/v1/product/all?limit=10&offset=0|
+    |GET |/v1/product/auth/all?limit=10&offset=0|
+    |POST |/v1/product/auth|
+    |DELETE |/v1/product/auth?id=|
+* Cart Service:
+    |Method|ROUTE|
+    |---|---|
+    |GET |/v1/cart?limit=10&offset=0|
+    |POST |/v1/cart|
+    |PATCH |/v1/cart|
+    |DELETE |/v1/cart|
+* Order Service:
+    |Method|ROUTE|
+    |---|---|
+    |GET |/v1/order?limit=10&offset=0|
+    |POST |/v1/order|
+    |DELETE |/v1/order|
+* Payment Service:
+    |Method|ROUTE|
+    |---|---|
+    |POST |/v1/payment|
+
 
 ## TODO
 - [x] Dev
@@ -101,7 +142,7 @@ http://localhost:3000
     - [x] Setup Rabbit MQ
         - [x] Publish User.* Message
 
-- [ ] Product Service
+- [x] Product Service
     - [x] Auth middleware which ask auth service for verify access token via GRPC 
     - [x] List Own product 
     - [x] delete own product
@@ -110,7 +151,7 @@ http://localhost:3000
         - [x] Publish Product.* Message
         - [x] Receive Order.* message from order service via rabbit MQ
 
-- [ ] Cart Service 
+- [x] Cart Service 
     - [x] Setup Rabbit MQ
         - [x] Receive User.* message from auth serivce via rabbit MQ
         - [x] Receive Product.* message from product serivce via rabbit MQ
@@ -118,7 +159,7 @@ http://localhost:3000
     - [x] Create Cart API
         - [x] CRUD
 
-- [ ] Order Service
+- [x] Order Service
     - [x] Setup RabbitMQ
         - [x] Receive User.* message from auth service via rabbit MQ
         - [x] Receive Product.* message from auth service via rabbit MQ

@@ -111,6 +111,34 @@ services:
       POSTGRES_DB: test
     volumes:
       - order-data:/var/lib/postgresql/data
+
+ #===========================================================
+  # Payment Service and Database
+ #===========================================================
+      
+  payment-service:
+    build: ./payment-service
+    container_name: payment-service
+    ports:
+      - "9014:9014"
+    environment:
+      DB_URL: payment-db
+      RABBIT_URL: amqp://guest:guest@rabbitmq:5672/
+    depends_on:
+      - payment-db
+      - auth-service
+      - rabbitmq
+    restart: on-failure
+
+  payment-db:
+    image: postgres
+    container_name: payment-db
+    environment:
+      POSTGRES_PASSWORD: testsecret
+      POSTGRES_USER: test
+      POSTGRES_DB: test
+    volumes:
+      - payment-data:/var/lib/postgresql/data
  #===========================================================
    #Message broker using Rabbit MQ 
  #===========================================================
@@ -132,6 +160,7 @@ volumes:
   product-data:
   cart-data:
   order-data:
+  payment-data:
   rabbitmq-data:
 
 
