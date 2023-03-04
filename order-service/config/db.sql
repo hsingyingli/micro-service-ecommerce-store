@@ -24,6 +24,7 @@ CREATE TABLE orders (
   uid bigint NOT null,
   pid bigint NOT null,
   amount int not null,
+  status varchar(10) not null DEFAULT 'WAIT',
   created_at TIMESTAMP not null DEFAULT(now()),
   updated_at TIMESTAMP not null DEFAULT(now())
 );

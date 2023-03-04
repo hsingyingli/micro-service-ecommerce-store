@@ -134,3 +134,62 @@ func (rabbit *Rabbit) ListenOnProduct() error {
 
 	return err
 }
+
+func (rabbit *Rabbit) ListenOnPayment() error {
+	err := rabbit.Consumer.ExchangeDeclare(
+		"payment_topic", // name
+		"topic",         // type
+		true,            // durable
+		false,           // auto-deleted
+		false,           // internal
+		false,           // no-wait
+		nil,             // arguments
+	)
+
+	q, err := rabbit.Consumer.QueueDeclare(
+		"",    // name
+		true,  // durable
+		false, // delete when unused
+		false, // exclusive
+		false, // no-wait
+		nil,   // arguments
+	)
+
+	err = rabbit.Consumer.QueueBind(
+		q.Name,          // queue name
+		"payment.*",     // routing key
+		"payment_topic", // exchange
+		false,
+		nil)
+
+	msgs, err := rabbit.Consumer.Consume(
+		q.Name, // queue
+		"",     // consumer
+		true,   // auto ack
+		false,  // exclusive
+		false,  // no local
+		false,  // no wait
+		nil,    // args
+	)
+
+	go func() {
+		for d := range msgs {
+			var err error
+			var order OrderPayload
+			err = json.Unmarshal(d.Body, &order)
+			if err != nil {
+				log.Println(err)
+				continue
+			}
+
+			log.Println("Message receive: " + d.RoutingKey)
+
+			switch d.RoutingKey {
+			case "payment.success":
+				err = rabbit.ConsumePaymentSuccess(order)
+			}
+		}
+	}()
+
+	return err
+}

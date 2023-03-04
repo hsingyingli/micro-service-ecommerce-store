@@ -10,6 +10,7 @@ type OrderPayload struct {
 	ID     int64
 	PID    int64
 	UID    int64 // product buyer
+	CID    int64
 	Amount int64
 	Price  int64
 }

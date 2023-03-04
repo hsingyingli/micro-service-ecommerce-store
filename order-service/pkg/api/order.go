@@ -40,6 +40,7 @@ func (server *Server) ListOrders(ctx *gin.Context) {
 
 type CreateOrderRequest struct {
 	PID    int64 `json:"pid" binding:"required"`
+	CID    int64 `json:"cid" binding:"required"`
 	Amount int64 `json:"amount" binding:"required"`
 }
 
@@ -49,6 +50,25 @@ func (server *Server) CreateOrder(ctx *gin.Context) {
 
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	product, err := server.store.GetProductInfo(ctx, req.PID)
+	if err != nil {
+		if err.Error() == sql.ErrNoRows.Error() {
+			ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+			return
+		}
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	if product.UID == user.Id {
+		ctx.JSON(http.StatusConflict, gin.H{"error": "Cant order your own product"})
+		return
+	}
+
+	if product.Amount < req.Amount {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "short of stock"})
 		return
 	}
 
@@ -74,6 +94,7 @@ func (server *Server) CreateOrder(ctx *gin.Context) {
 		ID:     order.ID,
 		PID:    order.PID,
 		UID:    user.Id,
+		CID:    req.CID,
 		Amount: order.Amount,
 		Price:  price,
 	})

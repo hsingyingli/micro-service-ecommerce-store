@@ -15,6 +15,13 @@ type Product struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
+type ProductInfo struct {
+	ID     int64 `json:"id"`
+	UID    int64 `json:"uid"`
+	Price  int64 `json:"price"`
+	Amount int64 `json:"amount"`
+}
+
 type User struct {
 	ID        int64     `json:"id"`
 	Username  string    `json:"username"`
@@ -28,6 +35,7 @@ type Order struct {
 	UID       int64     `json:"uid"`
 	PID       int64     `json:"pid"`
 	Amount    int64     `json:"amount"`
+	Status    string    `json:"status"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }

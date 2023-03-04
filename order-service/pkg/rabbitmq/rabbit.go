@@ -39,6 +39,10 @@ func NewRabbit(url string, store *db.Store) (rabbit *Rabbit, err error) {
 	if err != nil {
 		return
 	}
+	err = rabbit.ListenOnPayment()
+	if err != nil {
+		return
+	}
 	err = rabbit.connectToOrderTopic()
 
 	return

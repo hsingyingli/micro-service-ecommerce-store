@@ -22,7 +22,7 @@ const createOrder = `
   ) VALUES (
     $1, $2, $3
   ) 
-  RETURNING id, uid, pid, amount, created_at, updated_at
+  RETURNING id, uid, pid, amount, status, created_at, updated_at
 `
 
 type CreateOrderParam struct {
@@ -41,6 +41,7 @@ func (store *Store) CreateOrder(ctx context.Context, args CreateOrderParam) (Ord
 		&order.UID,
 		&order.PID,
 		&order.Amount,
+		&order.Status,
 		&order.CreatedAt,
 		&order.UpdatedAt,
 	)
@@ -89,6 +90,17 @@ func (store *Store) ListOrders(ctx context.Context, uid int64, limit int64, offs
 		return nil, err
 	}
 	return orders, err
+}
+
+const updateOrderStatus = `
+  UPDATE orders 
+  SET status = $2
+  WHERE id = $1
+`
+
+func (store *Store) UpdateOrderStatus(ctx context.Context, id int64, status string) error {
+	_, err := store.db.ExecContext(ctx, updateOrderStatus, id, status)
+	return err
 }
 
 const deleteOrder = `
