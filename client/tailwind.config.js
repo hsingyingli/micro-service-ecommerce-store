@@ -14,6 +14,15 @@ module.exports = {
       fontFamily: {
         'sans': ['"M PLUS Rounded 1c"', ...defaultTheme.fontFamily.sans]
       },
+      animation: {
+        fadin: 'fadin 0.5s ease-in-out',
+      },
+      keyframes: {
+        fadin: {
+          '0%': { opacity: 0 },
+          '100%': { opacity: 1 },
+        }
+      },
       colors: {
         'secondary': {
           50: '#e9e8e8',
