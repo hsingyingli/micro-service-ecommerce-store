@@ -7,8 +7,6 @@ interface Props {
 
 
 const Tooltip: React.FC<Props> = ({ children, tip }) => {
-
-
   return (
     <div className="relative group">
       {children}
