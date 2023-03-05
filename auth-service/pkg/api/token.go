@@ -8,10 +8,9 @@ import (
 )
 
 type RenewAccessTokenResponse struct {
-	AccessToken string `json:"accessToken"`
-	Username    string `json:"username"`
-	Email       string `json:"email"`
-	Id          int64  `json:"id"`
+	Username string `json:"username"`
+	Email    string `json:"email"`
+	Id       int64  `json:"id"`
 }
 
 // RenewAccessToken return access token if a vailded refresh token is provided
@@ -47,11 +46,13 @@ func (server *Server) RenewAccessToken(ctx *gin.Context) {
 	accessToken, err := server.tokenMaker.CreateToken(user, server.config.ACCESS_TOKEN_DURATION)
 
 	rsp := RenewAccessTokenResponse{
-		AccessToken: accessToken,
-		Username:    user.Username,
-		Email:       user.Email,
-		Id:          user.ID,
+		Username: user.Username,
+		Email:    user.Email,
+		Id:       user.ID,
 	}
+
+	maxage := server.config.ACCESS_TOKEN_DURATION.Microseconds()
+	ctx.SetCookie("ecommerce-store-access-token", accessToken, int(maxage), "/", "localhost", false, true)
 
 	ctx.JSON(http.StatusOK, rsp)
 }

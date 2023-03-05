@@ -75,10 +75,9 @@ type LoginUserRequest struct {
 }
 
 type LoginUserResponse struct {
-	AccessToken string `json:"accessToken"`
-	Username    string `json:"username"`
-	Email       string `json:"email"`
-	Id          int64  `json:"id"`
+	Username string `json:"username"`
+	Email    string `json:"email"`
+	Id       int64  `json:"id"`
 }
 
 func (server *Server) LoginUser(ctx *gin.Context) {
@@ -120,12 +119,13 @@ func (server *Server) LoginUser(ctx *gin.Context) {
 	}
 
 	rsp := LoginUserResponse{
-		AccessToken: accessToken,
-		Username:    user.Username,
-		Email:       user.Email,
-		Id:          user.ID,
+		Username: user.Username,
+		Email:    user.Email,
+		Id:       user.ID,
 	}
-	maxage := server.config.REFRESH_TOKEN_DURATION.Microseconds()
+	maxage := server.config.ACCESS_TOKEN_DURATION.Microseconds()
+	ctx.SetCookie("ecommerce-store-access-token", accessToken, int(maxage), "/", "localhost", false, true)
+	maxage = server.config.REFRESH_TOKEN_DURATION.Microseconds()
 	ctx.SetCookie("ecommerce-store-refresh-token", refreshToken, int(maxage), "/", "localhost", false, true)
 
 	// generate token
@@ -140,6 +140,7 @@ func (server *Server) LogoutUser(ctx *gin.Context) {
 		return
 	}
 
+	ctx.SetCookie("ecommerce-store-access-token", "", -1, "/", "localhost", false, true)
 	ctx.SetCookie("ecommerce-store-refresh-token", "", -1, "/", "localhost", false, true)
 	ctx.JSON(http.StatusOK, gin.H{"status": "ok"})
 }
