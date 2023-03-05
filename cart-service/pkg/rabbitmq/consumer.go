@@ -62,6 +62,7 @@ func (rabbit *Rabbit) ListenOnAuth() error {
 			case "user.delete":
 				err = rabbit.ConsumeDeleteUser(user.ID)
 			}
+			log.Println(err)
 		}
 	}()
 
@@ -129,6 +130,7 @@ func (rabbit *Rabbit) ListenOnProduct() error {
 			case "product.update.infoWithImage":
 				err = rabbit.ConsumeUpdateProductInfoWithImage(product)
 			}
+			log.Println(err)
 		}
 	}()
 
@@ -185,6 +187,7 @@ func (rabbit *Rabbit) ListenOnOrder() error {
 			log.Println("Message receive: " + d.RoutingKey)
 
 			err = rabbit.ConsumeCreateOrder(order)
+			log.Println(err)
 		}
 	}()
 

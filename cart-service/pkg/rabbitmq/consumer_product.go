@@ -12,9 +12,7 @@ type ProductPayload struct {
 	Title     string
 	Price     int64
 	Amount    int64
-	ImageData []byte
 	ImageName string
-	ImageType string
 }
 
 func (rabbit *Rabbit) ConsumeCreateProduct(product ProductPayload) error {
@@ -27,9 +25,7 @@ func (rabbit *Rabbit) ConsumeCreateProduct(product ProductPayload) error {
 		Title:     product.Title,
 		Price:     product.Price,
 		Amount:    product.Amount,
-		ImageData: product.ImageData,
 		ImageName: product.ImageName,
-		ImageType: product.ImageType,
 	})
 	return err
 }
@@ -61,9 +57,7 @@ func (rabbit *Rabbit) ConsumeUpdateProductInfoWithImage(product ProductPayload) 
 		Title:     product.Title,
 		Price:     product.Price,
 		Amount:    product.Amount,
-		ImageData: product.ImageData,
 		ImageName: product.ImageName,
-		ImageType: product.ImageType,
 	})
 	return err
 }

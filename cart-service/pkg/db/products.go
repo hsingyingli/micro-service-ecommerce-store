@@ -20,11 +20,11 @@ func (store *Store) GetProductAmountById(ctx context.Context, id int64) (int64, 
 
 const createProduct = `
   INSERT INTO products (
-    id, uid, title, price, amount, image_data, image_name, image_type 
+    id, uid, title, price, amount, image_name 
   ) VALUES (
-    $1, $2, $3, $4, $5, $6, $7, $8
+    $1, $2, $3, $4, $5, $6
   )
-  RETURNING id, uid, title, price, amount, image_data, image_name, image_type, created_at, updated_at
+  RETURNING id, uid, title, price, amount, image_name, created_at, updated_at
 `
 
 type CreateProductParam struct {
@@ -33,9 +33,7 @@ type CreateProductParam struct {
 	Title     string
 	Price     int64
 	Amount    int64
-	ImageData []byte
 	ImageName string
-	ImageType string
 }
 
 func (store *Store) CreateProduct(ctx context.Context, args CreateProductParam) (Product, error) {
@@ -45,9 +43,7 @@ func (store *Store) CreateProduct(ctx context.Context, args CreateProductParam) 
 		args.Title,
 		args.Price,
 		args.Amount,
-		args.ImageData,
-		args.ImageName,
-		args.ImageType)
+		args.ImageName)
 
 	var product Product
 	err := row.Scan(
@@ -56,9 +52,7 @@ func (store *Store) CreateProduct(ctx context.Context, args CreateProductParam) 
 		&product.Title,
 		&product.Price,
 		&product.Amount,
-		&product.ImageData,
 		&product.ImageName,
-		&product.ImageType,
 		&product.CreatedAt,
 		&product.UpdatedAt,
 	)
@@ -109,10 +103,8 @@ const updateProductInfoWithImage = `
   SET title = $2,
       price = $3,
       amount = $4,
-      image_data = $5,
-      image_name = $6,
-      image_type = $7,
-      updated_at = $8
+      image_name = $5,
+      updated_at = $6
   WHERE id = $1
 `
 
@@ -121,9 +113,7 @@ type UpdateProductInfoWithImageParam struct {
 	Title     string
 	Price     int64
 	Amount    int64
-	ImageData []byte
 	ImageName string
-	ImageType string
 }
 
 func (store *Store) UpdateProductInfoWithImage(ctx context.Context, args UpdateProductInfoWithImageParam) error {
@@ -132,9 +122,7 @@ func (store *Store) UpdateProductInfoWithImage(ctx context.Context, args UpdateP
 		args.Title,
 		args.Price,
 		args.Amount,
-		args.ImageData,
 		args.ImageName,
-		args.ImageType,
 		time.Now(),
 	)
 	return err

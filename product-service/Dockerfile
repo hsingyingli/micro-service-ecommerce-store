@@ -7,6 +7,7 @@ FROM alpine:3.13
 WORKDIR /app 
 COPY ./config ./config
 COPY --from=builder /app/main ./
+RUN mkdir images
 
 EXPOSE 9011
 CMD ["./main"]

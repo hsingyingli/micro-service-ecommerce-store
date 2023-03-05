@@ -3,11 +3,12 @@ package api
 import (
 	"database/sql"
 	"net/http"
+	"path/filepath"
 	"product/pkg/db"
-	"product/pkg/util"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 type GerProductResponse struct {
@@ -124,9 +125,10 @@ func (server *Server) CreateProduct(ctx *gin.Context) {
 		return
 	}
 
-	imageData, imageName, imageType, err := util.ParseImage(file)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	fileName := uuid.New().String() + filepath.Ext(file.Filename)
+	// Save the file to disk
+	if err := ctx.SaveUploadedFile(file, "./images/"+fileName); err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -147,9 +149,7 @@ func (server *Server) CreateProduct(ctx *gin.Context) {
 		Price:       price,
 		Amount:      amount,
 		Description: req.Description,
-		ImageData:   imageData,
-		ImageName:   imageName,
-		ImageType:   imageType,
+		ImageName:   fileName,
 	})
 
 	if err != nil {
@@ -163,9 +163,7 @@ func (server *Server) CreateProduct(ctx *gin.Context) {
 		Title:     product.Title,
 		Price:     product.Price,
 		Amount:    product.Amount,
-		ImageData: product.ImageData,
 		ImageName: product.ImageName,
-		ImageType: product.ImageType,
 	})
 
 	if err != nil {

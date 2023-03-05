@@ -8,9 +8,7 @@ type Product struct {
 	Title     string    `json:"title"`
 	Price     int64     `json:"price"`
 	Amount    int64     `json:"amount"`
-	ImageData []byte    `json:"image_data"`
 	ImageName string    `json:"image_name"`
-	ImageType string    `json:"image_type"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }
@@ -46,6 +44,5 @@ type OrderDetail struct {
 	Amount    int64  `json:"amount"`
 	Title     string `json:"title"`
 	Price     int64  `json:"price"`
-	ImageData []byte `json:"image_data"`
-	ImageType string `json:"image_type"`
+	ImageName string `json:"image_name"`
 }

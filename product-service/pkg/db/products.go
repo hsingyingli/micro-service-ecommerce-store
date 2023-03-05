@@ -3,7 +3,7 @@ package db
 import "context"
 
 const getProduct = `
-  SELECT id, uid, title, price, amount, num_unpaid, description, image_data, image_name, image_type, created_at, updated_at
+  SELECT id, uid, title, price, amount, num_unpaid, description, image_name, created_at, updated_at
   FROM products 
   WHERE id = $1
 `
@@ -19,9 +19,7 @@ func (store *Store) GetProduct(ctx context.Context, id int64) (Product, error) {
 		&i.Amount,
 		&i.NumUnPaid,
 		&i.Description,
-		&i.ImageData,
 		&i.ImageName,
-		&i.ImageType,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
@@ -29,7 +27,7 @@ func (store *Store) GetProduct(ctx context.Context, id int64) (Product, error) {
 }
 
 const listProducts = `
-  SELECT id, uid, title, price, amount, num_unpaid, description, image_data, image_name, image_type, created_at, updated_at
+  SELECT id, uid, title, price, amount, num_unpaid, description, image_name, created_at, updated_at
   FROM products 
   ORDER BY created_at
   LIMIT $1
@@ -53,9 +51,7 @@ func (store *Store) ListProducts(ctx context.Context, limit int64, offset int64)
 			&i.Amount,
 			&i.NumUnPaid,
 			&i.Description,
-			&i.ImageData,
 			&i.ImageName,
-			&i.ImageType,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 		); err != nil {
@@ -73,7 +69,7 @@ func (store *Store) ListProducts(ctx context.Context, limit int64, offset int64)
 }
 
 const listOwnProducts = `
-  SELECT id, uid, title, price, amount, num_unpaid, description, image_data, image_name, image_type, created_at, updated_at
+  SELECT id, uid, title, price, amount, num_unpaid, description, image_name, created_at, updated_at
   FROM products 
   WHERE uid = $1
   ORDER BY created_at
@@ -98,9 +94,7 @@ func (store *Store) ListOwnProducts(ctx context.Context, uid int64, limit int64,
 			&i.Amount,
 			&i.NumUnPaid,
 			&i.Description,
-			&i.ImageData,
 			&i.ImageName,
-			&i.ImageType,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 		); err != nil {
@@ -119,11 +113,11 @@ func (store *Store) ListOwnProducts(ctx context.Context, uid int64, limit int64,
 
 const createProduct = `
   INSERT INTO products (
-    uid, title, price, amount, description, image_data, image_name, image_type 
+    uid, title, price, amount, description, image_name 
   ) VALUES (
-    $1, $2, $3, $4, $5, $6, $7, $8
+    $1, $2, $3, $4, $5, $6
   )
-  RETURNING id, uid, title, price, amount, num_unpaid, description, image_data, image_name, image_type, created_at, updated_at
+  RETURNING id, uid, title, price, amount, num_unpaid, description, image_name, created_at, updated_at
 `
 
 type CreateProductParam struct {
@@ -132,9 +126,7 @@ type CreateProductParam struct {
 	Price       int64
 	Amount      int64
 	Description string
-	ImageData   []byte
 	ImageName   string
-	ImageType   string
 }
 
 func (store *Store) CreateProduct(ctx context.Context, args CreateProductParam) (Product, error) {
@@ -144,9 +136,8 @@ func (store *Store) CreateProduct(ctx context.Context, args CreateProductParam) 
 		args.Price,
 		args.Amount,
 		args.Description,
-		args.ImageData,
 		args.ImageName,
-		args.ImageType)
+	)
 
 	var product Product
 	err := row.Scan(
@@ -157,9 +148,7 @@ func (store *Store) CreateProduct(ctx context.Context, args CreateProductParam) 
 		&product.Amount,
 		&product.NumUnPaid,
 		&product.Description,
-		&product.ImageData,
 		&product.ImageName,
-		&product.ImageType,
 		&product.CreatedAt,
 		&product.UpdatedAt,
 	)

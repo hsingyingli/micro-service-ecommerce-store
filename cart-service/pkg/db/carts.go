@@ -34,7 +34,7 @@ func (store *Store) CreateCart(ctx context.Context, args CreateCartParam) (Cart,
 }
 
 const listCarts = `
-  SELECT c.id, c.pid, c.amount, p.title, p.price, p.image_data, p.image_type
+  SELECT c.id, c.pid, c.amount, p.title, p.price, p.image_name
   FROM products as p, carts as c
   WHERE c.uid = $1
   ORDER BY c.created_at
@@ -59,8 +59,7 @@ func (store *Store) ListCarts(ctx context.Context, uid int64, limit int64, offse
 			&i.Amount,
 			&i.Title,
 			&i.Price,
-			&i.ImageData,
-			&i.ImageType,
+			&i.ImageName,
 		); err != nil {
 			return nil, err
 		}

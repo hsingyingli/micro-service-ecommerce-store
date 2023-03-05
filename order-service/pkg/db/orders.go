@@ -49,7 +49,7 @@ func (store *Store) CreateOrder(ctx context.Context, args CreateOrderParam) (Ord
 }
 
 const listOrders = `
-  SELECT o.id, o.pid, o.amount, p.title, p.price, p.image_data, p.image_type
+  SELECT o.id, o.pid, o.amount, p.title, p.price, p.image_name
   FROM products as p, order as o 
   WHERE o.uid = $1
   ORDER BY o.created_at
@@ -74,8 +74,7 @@ func (store *Store) ListOrders(ctx context.Context, uid int64, limit int64, offs
 			&i.Amount,
 			&i.Title,
 			&i.Price,
-			&i.ImageData,
-			&i.ImageType,
+			&i.ImageName,
 		); err != nil {
 			return nil, err
 		}

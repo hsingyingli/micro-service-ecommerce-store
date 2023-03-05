@@ -35,9 +35,7 @@ type ProductPayload struct {
 	Title     string
 	Price     int64
 	Amount    int64
-	ImageData []byte
 	ImageName string
-	ImageType string
 }
 
 func (store *Store) UpdateInventoryStatuTx(ctx context.Context, pid int64, a int64, n int64) (ProductPayload, error) {
