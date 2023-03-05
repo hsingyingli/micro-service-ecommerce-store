@@ -12,20 +12,8 @@ import (
 
 func (server *Server) ListOrders(ctx *gin.Context) {
 	user := ctx.MustGet(authorizationPayloadKey).(*User)
-	l := ctx.DefaultQuery("limit", "10")
-	limit, err := strconv.Atoi(l)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-	o := ctx.DefaultQuery("offset", "0")
-	offset, err := strconv.Atoi(o)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
 
-	orders, err := server.store.ListOrders(ctx, user.Id, int64(limit), int64(offset))
+	orders, err := server.store.ListOrders(ctx, user.Id)
 	if err != nil {
 		if err.Error() == sql.ErrNoRows.Error() {
 			ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})

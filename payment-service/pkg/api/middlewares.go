@@ -3,7 +3,6 @@ package api
 import (
 	"errors"
 	"net/http"
-	"strings"
 
 	"github.com/gin-gonic/gin"
 
@@ -41,34 +40,11 @@ type User struct {
 func authMiddleware(GRPC_URL string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 
-		// user should provide authorization header
-		header := ctx.GetHeader(authorizationHeaderKey)
-		if len(header) == 0 {
-			err := errors.New("authorization header is not provided")
+		accessToken, err := ctx.Cookie("ecommerce-store-access-token")
+		if err != nil {
 			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 			return
 		}
-
-		// check authorization header format
-		// should be bearer access-token
-		fields := strings.Fields(header)
-
-		if len(fields) < 2 {
-			err := errors.New("invaild authorization header format")
-			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
-			return
-		}
-
-		authorizationType := strings.ToLower(fields[0])
-
-		// should be bearer
-		if authorizationType != authorizationTypeBearer {
-			err := errors.New("unsupport authorization type")
-			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
-			return
-		}
-
-		accessToken := fields[1]
 
 		// send access token to auth service via grpc connection
 		response, err := grpc.VerifyToken(ctx, GRPC_URL, accessToken)

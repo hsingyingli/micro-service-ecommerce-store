@@ -38,12 +38,10 @@ const listCarts = `
   FROM products as p, carts as c
   WHERE c.uid = $1
   ORDER BY c.created_at
-  LIMIT $2
-  OFFSET $3
 `
 
-func (store *Store) ListCarts(ctx context.Context, uid int64, limit int64, offset int64) ([]CartDetail, error) {
-	rows, err := store.db.QueryContext(ctx, listCarts, uid, limit, offset)
+func (store *Store) ListCarts(ctx context.Context, uid int64) ([]CartDetail, error) {
+	rows, err := store.db.QueryContext(ctx, listCarts, uid)
 	if err != nil {
 		return nil, err
 	}

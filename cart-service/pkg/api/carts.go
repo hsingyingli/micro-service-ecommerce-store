@@ -12,20 +12,7 @@ import (
 func (server *Server) ListOwnCarts(ctx *gin.Context) {
 	user := ctx.MustGet(authorizationPayloadKey).(*User)
 
-	l := ctx.DefaultQuery("limit", "10")
-	o := ctx.DefaultQuery("offset", "0")
-
-	limit, err := strconv.Atoi(l)
-	if err != nil {
-		ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
-		return
-	}
-	offset, err := strconv.Atoi(o)
-	if err != nil {
-		ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
-		return
-	}
-	carts, err := server.store.ListCarts(ctx, user.Id, int64(limit), int64(offset))
+	carts, err := server.store.ListCarts(ctx, user.Id)
 
 	if err != nil {
 		if err.Error() == sql.ErrNoRows.Error() {
