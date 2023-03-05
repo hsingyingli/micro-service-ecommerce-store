@@ -9,9 +9,7 @@ type Product = {
   price: number
   amount: number
   description: string
-  image_data: string
   image_name: string
-  image_type: string
   createdAt: string
   updatedAt: string
 }
@@ -42,15 +40,17 @@ const SellProvider: React.FC<Props> = ({ children }) => {
 
 
   useEffect(() => {
-    if (user === null) return
-
     const fetchSellProduct = async () => {
       try {
-        const res = await axiosPrivate.get("/v1/auth/product/all")
+        const res = await axiosPrivate.get("/v1/product/auth/all")
         setProducts(res.data as Array<Product>)
-        console.log(res.data)
       } catch (error) {
       }
+    }
+
+    if (user === null) {
+      setProducts([])
+      return
     }
 
     fetchSellProduct()

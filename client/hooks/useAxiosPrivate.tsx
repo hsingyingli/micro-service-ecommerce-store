@@ -1,6 +1,6 @@
 import { useEffect, useContext, useState } from "react";
 import { AuthContext } from "@/store/providers/AuthProvider"
-import { axiosAuth, axiosProduct } from "@/utils/axios";
+import { axiosAuth, axiosCart, axiosProduct } from "@/utils/axios";
 import refreshTokenAPI from "@/utils/refreshTokenAPI";
 import { AxiosInstance } from "axios";
 
@@ -8,6 +8,7 @@ const useAxiosPrivate = (service: string) => {
   const { user, updateUser } = useContext(AuthContext);
   const [axiosPrivate, setAxiosPrivate] = useState<AxiosInstance>(() => {
     if (service === "product") return axiosProduct
+    if (service === "cart") return axiosCart
     return axiosAuth
   })
 

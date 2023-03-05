@@ -46,6 +46,7 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
     const error = await logoutAPI()
     if (error === null) {
       setUser(null)
+      router.push("/")
     }
     return error
   }

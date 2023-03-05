@@ -2,6 +2,7 @@ import axios from "axios";
 
 const BASE_URL = process.env.NEXT_PUBLIC_AUTH_BASE_URL || ""
 const PRODUCT_URL = process.env.NEXT_PUBLIC_PRODUCT_BASE_URL || ""
+const CART_URL = process.env.NEXT_PUBLIC_CART_BASE_URL || ""
 
 const base = axios.create({
   baseURL: BASE_URL
@@ -20,4 +21,9 @@ const axiosProduct = axios.create({
   withCredentials: true,
 })
 
-export { axiosAuth, axiosProduct, base as axios }
+const axiosCart = axios.create({
+  baseURL: CART_URL,
+  withCredentials: true,
+})
+
+export { axiosAuth, axiosProduct, axiosCart, base as axios }

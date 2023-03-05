@@ -2,6 +2,7 @@ import { ProductCard } from "@/components/ProductCard";
 import { Product } from "@/store/providers/SellProvider";
 import axios from "axios";
 import { NextPage } from "next";
+import Image from "next/image";
 import Link from "next/link";
 
 interface Props {
@@ -10,16 +11,20 @@ interface Props {
 
 const HomePage: NextPage<Props> = ({ products }) => {
   return (
-    <div className="mt-10 flex flex-wrap gap-5 justify-center">
-      {products.map((product) => (
-        <Link href={`/product/${product.id}`} key={product.id}>
-          <div key={product.id}
-            className="rounded-md border-2 border-primary-500 overflow-hidden
-              w-[13rem] aspect-[6/7] hover:shadow-xl hover:shadow-primary-500">
-            <ProductCard product={product} />
-          </div>
-        </Link>
-      ))}
+    <div className="mt-10">
+      <div className="relative w-full aspect-[2/1] sm:aspect-[3/1] rounded-md overflow-hidden">
+        <Image src={"/assets/banner.png"} alt="banner" fill />
+      </div>
+      <section className="flex flex-wrap gap-5 justify-start mt-10 p-2">
+        {products.map((product) => (
+          <Link href={`/product/${product.id}`} key={product.id}>
+            <ProductCard
+              key={product.id}
+              product={product}>
+            </ProductCard>
+          </Link>
+        ))}
+      </section>
     </div>
   )
 }

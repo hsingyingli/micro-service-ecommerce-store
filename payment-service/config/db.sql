@@ -17,6 +17,6 @@ CREATE TABLE payments (
   updated_at  TIMESTAMP NOT NULL DEFAULT(now())
 );
 
-ALTER TABLE "payment"
-ADD FOREIGN KEY ("oid")
-REFERENCES "orders" ("id");
+-- ALTER TABLE "payments"
+-- ADD FOREIGN KEY ("oid")
+-- REFERENCES "orders" ("id");

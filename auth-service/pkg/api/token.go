@@ -39,6 +39,7 @@ func (server *Server) RenewAccessToken(ctx *gin.Context) {
 	user, err := server.store.GetUserById(ctx, payload.UID)
 
 	if err != nil {
+		ctx.SetCookie("ecommerce-store-refresh-token", "", -1, "/", "localhost", false, true)
 		ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 	}
 

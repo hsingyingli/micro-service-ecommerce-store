@@ -23,7 +23,7 @@ const SellsPage: NextPage = () => {
   const handleOnDelete = async (id: number) => {
     const toastId = toast.loading("Deleting...")
     try {
-      await axiosPrivate.delete(`/v1/auth/product?id=${id}`)
+      await axiosPrivate.delete(`/v1/product/auth?id=${id}`)
       toast.success('Deleted', {
         id: toastId,
       });
@@ -44,34 +44,27 @@ const SellsPage: NextPage = () => {
           bg-primary-700 hover:bg-primary-800 transition-colors duration-150">Create</Link>
       </div>
       <div className="mt-10 flex gap-5 flex-wrap">
+
         {
           displayProducts.map((product) => (
-            <div key={product.id}
-              className="rounded-md border-2 border-primary-500 overflow-hidden
-              w-full max-w-[15rem] hover:shadow-xl hover:shadow-primary-500">
-              <ProductCard product={product} />
-              <div className="flex flex-row gap-2 px-2 pb-1">
-                <Link href={`/sells/edit/${product.id}`}>
-                  <PencilSquareIcon
-                    className="w-5 h-5 text-secondary-500 hover:text-secondary-700"
-                  />
-                </Link>
+            <ProductCard key={product.id} product={product}>
+              <div className="flex flex-col sm:flex-row sm:justify-start justify-center gap-2 px-2 pb-1">
                 <Link href={`/product/${product.id}`}>
                   <ArrowTopRightOnSquareIcon
-                    className="w-5 h-5 text-secondary-500 hover:text-secondary-700"
+                    className="w-6 h-6 text-secondary-500 hover:text-secondary-700"
                   />
                 </Link>
                 <button onClick={() => handleOnDelete(product.id)}>
                   <TrashIcon
-                    className="w-5 h-5 text-secondary-500 hover:text-secondary-700"
+                    className="w-6 h-6 text-secondary-500 hover:text-secondary-700"
                   />
                 </button>
               </div>
-            </div>
+            </ProductCard>
           ))
         }
-      </div>
-    </div>
+      </div >
+    </div >
   )
 }
 

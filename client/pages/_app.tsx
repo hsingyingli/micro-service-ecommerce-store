@@ -1,6 +1,6 @@
 import { MainLayout } from '@/components/Layouts'
 import AuthProvider from '@/store/providers/AuthProvider'
-import { CartProvider } from '@/store/providers/CartProvider';
+import CartProvider from '@/store/providers/CartProvider';
 import SellProvider from '@/store/providers/SellProvider';
 import '@/styles/globals.css'
 import type { AppProps } from 'next/app'

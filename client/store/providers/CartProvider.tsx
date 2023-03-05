@@ -1,24 +1,27 @@
 import { useAuth } from "@/hooks/useAuth"
+import useAxiosPrivate from "@/hooks/useAxiosPrivate"
 import React, { createContext, useEffect, useState } from "react"
-import { Product } from "./SellProvider"
 
 type CartItem = {
   id: number,
-  imageData: string,
+  pid: number,
+  amount: number,
   title: string,
   price: number,
-  amount: number,
+  image_name: string,
+  created_at: string,
+  updated_at: string
 }
 
 interface CartContextInterface {
-  products: Array<Product>
-  addProduct: (product: Product) => void
+  products: Array<CartItem>
+  addProduct: (item: CartItem) => void
   removeProduct: (id: number) => void
 }
 
 const initState: CartContextInterface = {
   products: [],
-  addProduct: (product: Product) => { },
+  addProduct: (item: CartItem) => { },
   removeProduct: (id: number) => { }
 }
 
@@ -29,11 +32,17 @@ interface Props {
 }
 
 const CartProvider: React.FC<Props> = ({ children }) => {
-  const [products, setProducts] = useState<Array<Product>>([])
+  const [products, setProducts] = useState<Array<CartItem>>([])
+  const axiosPrivate = useAxiosPrivate("cart")
   const { user } = useAuth()
   useEffect(() => {
     const fetchCart = async () => {
-
+      const res = await axiosPrivate.get("/v1/cart", {
+        headers: {
+          "Content-Type": "application/json"
+        }
+      })
+      console.log(res.data)
     }
 
     if (user === null) {
@@ -46,9 +55,9 @@ const CartProvider: React.FC<Props> = ({ children }) => {
   }, [user])
 
 
-  const addProduct = (product: Product) => {
+  const addProduct = (item: CartItem) => {
     setProducts((prev) => {
-      prev.push(product)
+      prev.push(item)
       return prev
     })
   }
@@ -70,3 +79,6 @@ export {
   CartContext
 }
 
+export type {
+  CartItem
+}

@@ -156,6 +156,10 @@ func (store *Store) CreateProduct(ctx context.Context, args CreateProductParam) 
 	return product, err
 }
 
+const updateProductInfo = `
+
+`
+
 const deleteProductById = `
   DELETE 
   FROM products 

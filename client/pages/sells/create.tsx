@@ -52,7 +52,7 @@ const CreateProductPage: NextPage = () => {
     formData.append('description', description)
 
     try {
-      const res = await axiosPrivate.post('/v1/auth/product', formData, {
+      const res = await axiosPrivate.post('/v1/product/auth', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
@@ -64,13 +64,12 @@ const CreateProductPage: NextPage = () => {
       addProduct(res.data)
       router.push("/sells")
     } catch (error) {
-      toast.success('Fail', {
+      toast.error('Fail', {
         id: toastId,
       });
     }
 
     setIsLoading(false)
-
   }
 
   return (
