@@ -8,7 +8,6 @@ type User = {
   id: number
   username: string
   email: string
-  accessToken: string
 }
 
 interface AuthContextInterface {
@@ -30,7 +29,6 @@ const AuthContext = createContext<AuthContextInterface>(initState)
 interface Props {
   children: React.ReactNode
 }
-
 
 const AuthProvider: React.FC<Props> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null)
@@ -61,15 +59,6 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
     const handleFinishRedirect = () => setIsLoading(false)
     router.events.on("routeChangeComplete", handleFinishRedirect)
     return () => router.events.off("routeChangeComplete", handleFinishRedirect)
-  }, [])
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      const user = await refreshTokenAPI()
-      setUser(user)
-      setIsLoading(false)
-    }
-    fetchUser()
   }, [])
 
   useEffect(() => {
