@@ -40,7 +40,7 @@ const CartMenu: React.FC = () => {
             >
               <Popover.Panel className="absolute right-0 z-30 mt-3 w-screen max-w-[15rem] sm:max-w-xs px-4 sm:px-0 ">
                 <div className="bg-white overflow-hidden rounded-md shadow-lg">
-                  <div className="flex flex-col p-1 gap-2">
+                  <div className="flex flex-col p-1 gap-1">
                     {user === null ?
                       <Link
                         href={"/login"}
@@ -55,11 +55,14 @@ const CartMenu: React.FC = () => {
                           <Link
                             key={product.id}
                             href={`/product/${product.id}`}
-                            className="h-14 w-full"
+                            className="h-14 w-full rounded-md hover:bg-secondary-50"
                           >
                             <CartItemCard item={product} />
                           </Link>
                         ))}
+                        <Link href="/carts/all" className="text-center underline">
+                          View All
+                        </Link>
                       </>
                     }
 
