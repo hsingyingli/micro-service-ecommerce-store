@@ -71,21 +71,21 @@ http://localhost:3000
     |Method|ROUTE|
     |---|---|
     |GET |/v1/product?id=|
-    |GET |/v1/product/all?limit=10&offset=0|
-    |GET |/v1/product/auth/all?limit=10&offset=0|
+    |GET |/v1/product/all|
+    |GET |/v1/product/auth/all|
     |POST |/v1/product/auth|
     |DELETE |/v1/product/auth?id=|
 * Cart Service:
     |Method|ROUTE|
     |---|---|
-    |GET |/v1/cart?limit=10&offset=0|
+    |GET |/v1/cart|
     |POST |/v1/cart|
     |PATCH |/v1/cart|
     |DELETE |/v1/cart|
 * Order Service:
     |Method|ROUTE|
     |---|---|
-    |GET |/v1/order?limit=10&offset=0|
+    |GET |/v1/order|
     |POST |/v1/order|
     |DELETE |/v1/order|
 * Payment Service:
