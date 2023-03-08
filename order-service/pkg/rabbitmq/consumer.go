@@ -3,6 +3,7 @@ package rabbitmq
 import (
 	"encoding/json"
 	"log"
+	"order/pkg/db"
 )
 
 func (rabbit *Rabbit) ListenOnAuth() error {
@@ -109,7 +110,7 @@ func (rabbit *Rabbit) ListenOnProduct() error {
 	go func() {
 		for d := range msgs {
 			var err error
-			var product ProductPayload
+			var product []db.ProductPayload
 			err = json.Unmarshal(d.Body, &product)
 			if err != nil {
 				log.Println(err)
@@ -120,15 +121,15 @@ func (rabbit *Rabbit) ListenOnProduct() error {
 
 			switch d.RoutingKey {
 			case "product.create":
-				err = rabbit.ConsumeCreateProduct(product)
+				err = rabbit.ConsumeCreateProduct(product[0])
 			case "product.delete":
-				err = rabbit.ConsumeDeleteProduct(product.ID, product.UID)
+				err = rabbit.ConsumeDeleteProduct(product[0])
 			case "product.update.amount":
 				err = rabbit.ConsumeUpdateProductAmount(product)
 			case "product.update.info":
-				err = rabbit.ConsumeUpdateProductInfo(product)
+				err = rabbit.ConsumeUpdateProductInfo(product[0])
 			case "product.update.infoWithImage":
-				err = rabbit.ConsumeUpdateProductInfoWithImage(product)
+				err = rabbit.ConsumeUpdateProductInfoWithImage(product[0])
 			}
 			log.Println(err)
 		}
@@ -177,7 +178,7 @@ func (rabbit *Rabbit) ListenOnPayment() error {
 	go func() {
 		for d := range msgs {
 			var err error
-			var order OrderPayload
+			var order db.OrderPayload
 			err = json.Unmarshal(d.Body, &order)
 			if err != nil {
 				log.Println(err)

@@ -157,14 +157,18 @@ func (server *Server) CreateProduct(ctx *gin.Context) {
 		return
 	}
 
-	err = server.rabbit.PublishProduct(ctx, "product.create", db.ProductPayload{
-		ID:        product.ID,
-		UID:       product.UID,
-		Title:     product.Title,
-		Price:     product.Price,
-		Amount:    product.Amount,
-		ImageName: product.ImageName,
-	})
+	products := []db.ProductPayload{
+		{
+			ID:        product.ID,
+			UID:       product.UID,
+			Title:     product.Title,
+			Price:     product.Price,
+			Amount:    product.Amount,
+			ImageName: product.ImageName,
+		},
+	}
+
+	err = server.rabbit.PublishProduct(ctx, "product.create", products)
 
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -195,10 +199,14 @@ func (server *Server) DeleteProductById(ctx *gin.Context) {
 		return
 	}
 
-	err = server.rabbit.PublishProduct(ctx, "product.delete", db.ProductPayload{
-		ID:  int64(id),
-		UID: user.Id,
-	})
+	products := []db.ProductPayload{
+		{
+			ID:  int64(id),
+			UID: user.Id,
+		},
+	}
+
+	err = server.rabbit.PublishProduct(ctx, "product.delete", products)
 
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

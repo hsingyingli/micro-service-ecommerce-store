@@ -12,19 +12,25 @@ type Order struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
-type OrderPayload struct {
-	ID     int64 `json:"id"`
-	PID    int64 `json:"pid"`
-	UID    int64 `json:"uid"`
-	CID    int64 `json:"cid"`
-	Amount int64 `json:"amount"`
-	Price  int64 `json:"price"`
-}
-
 type Payment struct {
 	ID        int64     `json:"id"`
 	OID       int64     `json:"oid"`
 	Status    string    `json:"status"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
+}
+
+type OrderItemDetail struct {
+	ID        int64  `json:"id"`
+	OID       int64  `json:"oid"`
+	PID       int64  `json:"pid"`
+	Amount    int64  `json:"amount"`
+	Price     int64  `json:"price"`
+	ImageName string `json:"image_name"`
+}
+
+type OrderPayload struct {
+	ID    int64             `json:"id"`
+	UID   int64             `json:"uid"`
+	Items []OrderItemDetail `json:"items"`
 }

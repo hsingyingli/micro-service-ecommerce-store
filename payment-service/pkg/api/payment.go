@@ -18,6 +18,7 @@ func (server *Server) FinishPayment(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
 	order, err := server.store.GetOrderById(ctx, req.OID, user.Id)
 
 	if err != nil {

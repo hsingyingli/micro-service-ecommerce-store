@@ -29,10 +29,20 @@ CREATE TABLE order_items (
   id bigserial PRIMARY KEY NOT null,
   oid bigint NOT NULL,
   pid bigint NOT NULL,
-  amount int not null
+  amount int not null,
   created_at TIMESTAMP not null DEFAULT(now()),
   updated_at TIMESTAMP not null DEFAULT(now())
 );
+
+ALTER TABLE "orders" 
+ADD FOREIGN KEY ("uid") 
+REFERENCES "users" ("id")
+ON DELETE CASCADE;
+
+ALTER TABLE "products"
+ADD FOREIGN KEY ("uid")
+REFERENCES "users" ("id")
+ON DELETE CASCADE;
 
 ALTER TABLE "order_items"
 ADD FOREIGN KEY ("oid")
@@ -42,18 +52,4 @@ ON DELETE CASCADE;
 ALTER TABLE "order_items"
 ADD FOREIGN KEY ("pid")
 REFERENCES "products" ("id")
-
-ALTER TABLE "orders" 
-ADD FOREIGN KEY ("uid") 
-REFERENCES "users" ("id")
-ON DELETE CASCADE;
-
-ALTER TABLE "orders"
-ADD FOREIGN KEY ("pid")
-REFERENCES "products" ("id")
-ON DELETE CASCADE;
-
-ALTER TABLE "products"
-ADD FOREIGN KEY ("uid")
-REFERENCES "users" ("id")
 ON DELETE CASCADE;

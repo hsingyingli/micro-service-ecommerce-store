@@ -61,6 +61,7 @@ func (rabbit *Rabbit) listenOnOrder() error {
 			case "order.delete":
 				err = rabbit.ConsumeDeleteOrder(order)
 			}
+			log.Println(err)
 		}
 	}()
 

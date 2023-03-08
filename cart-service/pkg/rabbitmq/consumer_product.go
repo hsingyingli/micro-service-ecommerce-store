@@ -6,16 +6,7 @@ import (
 	"time"
 )
 
-type ProductPayload struct {
-	ID        int64
-	UID       int64
-	Title     string
-	Price     int64
-	Amount    int64
-	ImageName string
-}
-
-func (rabbit *Rabbit) ConsumeCreateProduct(product ProductPayload) error {
+func (rabbit *Rabbit) ConsumeCreateProduct(product db.ProductPayload) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -30,14 +21,14 @@ func (rabbit *Rabbit) ConsumeCreateProduct(product ProductPayload) error {
 	return err
 }
 
-func (rabbit *Rabbit) ConsumeUpdateProductAmount(product ProductPayload) error {
+func (rabbit *Rabbit) ConsumeUpdateProductAmount(product []db.ProductPayload) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	err := rabbit.store.UpdateProductAmount(ctx, product.ID, product.Amount)
+	err := rabbit.store.UpdateBatchProductAmountTx(ctx, product)
 	return err
 }
 
-func (rabbit *Rabbit) ConsumeUpdateProductInfo(product ProductPayload) error {
+func (rabbit *Rabbit) ConsumeUpdateProductInfo(product db.ProductPayload) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	err := rabbit.store.UpdateProductInfo(ctx, db.UpdateProductInfoParam{
@@ -49,7 +40,7 @@ func (rabbit *Rabbit) ConsumeUpdateProductInfo(product ProductPayload) error {
 	return err
 }
 
-func (rabbit *Rabbit) ConsumeUpdateProductInfoWithImage(product ProductPayload) error {
+func (rabbit *Rabbit) ConsumeUpdateProductInfoWithImage(product db.ProductPayload) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	err := rabbit.store.UpdateProductInfoWithImage(ctx, db.UpdateProductInfoWithImageParam{
@@ -62,10 +53,10 @@ func (rabbit *Rabbit) ConsumeUpdateProductInfoWithImage(product ProductPayload) 
 	return err
 }
 
-func (rabbit *Rabbit) ConsumeDeleteProduct(id int64, uid int64) error {
+func (rabbit *Rabbit) ConsumeDeleteProduct(product db.ProductPayload) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	err := rabbit.store.DeleteProductById(ctx, id, uid)
+	err := rabbit.store.DeleteProductById(ctx, product.ID, product.UID)
 	return err
 }

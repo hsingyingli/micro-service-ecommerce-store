@@ -8,8 +8,8 @@ import (
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
-func (rabbit *Rabbit) PublishProduct(ctx context.Context, key string, product db.ProductPayload) error {
-	body, err := json.Marshal(product)
+func (rabbit *Rabbit) PublishProduct(ctx context.Context, key string, products []db.ProductPayload) error {
+	body, err := json.Marshal(products)
 	if err != nil {
 		return err
 	}

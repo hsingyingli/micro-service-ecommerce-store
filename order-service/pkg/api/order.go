@@ -1,35 +1,15 @@
 package api
 
 import (
-	"database/sql"
 	"net/http"
 	"order/pkg/db"
-	"order/pkg/rabbitmq"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
 
-func (server *Server) ListOrders(ctx *gin.Context) {
-	user := ctx.MustGet(authorizationPayloadKey).(*User)
-
-	orders, err := server.store.ListOrders(ctx, user.Id)
-	if err != nil {
-		if err.Error() == sql.ErrNoRows.Error() {
-			ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
-			return
-		}
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	ctx.JSON(http.StatusOK, orders)
-}
-
 type CreateOrderRequest struct {
-	PID    int64 `json:"pid" binding:"required"`
-	CID    int64 `json:"cid" binding:"required"`
-	Amount int64 `json:"amount" binding:"required"`
+	Items []db.CreateOrderItemParam `json:"items" binding:"required"`
 }
 
 func (server *Server) CreateOrder(ctx *gin.Context) {
@@ -40,59 +20,25 @@ func (server *Server) CreateOrder(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	product, err := server.store.GetProductInfo(ctx, req.PID)
+
+	orderPayload, err := server.store.CreateOrderTx(ctx, db.CreateOrderTxParam{
+		UID:   user.Id,
+		Items: req.Items,
+	})
+
 	if err != nil {
-		if err.Error() == sql.ErrNoRows.Error() {
-			ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
-			return
-		}
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	err = server.rabbit.PublishOrder(ctx, "order.create", orderPayload)
+
+	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	if product.UID == user.Id {
-		ctx.JSON(http.StatusConflict, gin.H{"error": "Cant order your own product"})
-		return
-	}
-
-	if product.Amount < req.Amount {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "short of stock"})
-		return
-	}
-
-	order, err := server.store.CreateOrder(ctx, db.CreateOrderParam{
-		UID:    user.Id,
-		PID:    req.PID,
-		Amount: req.Amount,
-	})
-
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	price, err := server.store.GetProductPriceById(ctx, order.PID)
-
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	err = server.rabbit.PublishOrder(ctx, "order.create", rabbitmq.OrderPayload{
-		ID:     order.ID,
-		PID:    order.PID,
-		UID:    user.Id,
-		CID:    req.CID,
-		Amount: order.Amount,
-		Price:  price,
-	})
-
-	if err != nil {
-		ctx.JSON(http.StatusOK, gin.H{"error": err.Error()})
-		return
-	}
-
-	ctx.JSON(http.StatusOK, order)
+	ctx.JSON(http.StatusOK, orderPayload)
 }
 
 func (server *Server) DeleteOrder(ctx *gin.Context) {
@@ -104,7 +50,7 @@ func (server *Server) DeleteOrder(ctx *gin.Context) {
 		return
 	}
 
-	pid, amount, err := server.store.GetOrderAmount(ctx, int64(id))
+	orderPayload, err := server.store.GetOrderInfo(ctx, int64(id), user.Id)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -116,10 +62,8 @@ func (server *Server) DeleteOrder(ctx *gin.Context) {
 		return
 	}
 
-	err = server.rabbit.PublishOrder(ctx, "order.delete", rabbitmq.OrderPayload{
-		PID:    pid,
-		Amount: amount,
-	})
+	err = server.rabbit.PublishOrder(ctx, "order.delete", orderPayload)
+
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

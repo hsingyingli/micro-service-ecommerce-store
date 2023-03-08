@@ -10,7 +10,6 @@ func (server *Server) setupRouter() {
 		// check if vailded access token is provided
 		order.Use(authMiddleware(server.config.GRPC_URL))
 		{
-			order.GET("", server.ListOrders)
 			order.POST("", server.CreateOrder)
 			order.DELETE("", server.DeleteOrder)
 		}

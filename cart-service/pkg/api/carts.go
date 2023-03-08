@@ -67,6 +67,11 @@ func (server *Server) CreateCart(ctx *gin.Context) {
 		return
 	}
 
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
 	ctx.JSON(http.StatusOK, cart)
 }
 

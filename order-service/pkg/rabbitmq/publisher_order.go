@@ -3,19 +3,12 @@ package rabbitmq
 import (
 	"context"
 	"encoding/json"
+	"order/pkg/db"
+
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
-type OrderPayload struct {
-	ID     int64
-	PID    int64
-	UID    int64 // product buyer
-	CID    int64
-	Amount int64
-	Price  int64
-}
-
-func (rabbit *Rabbit) PublishOrder(ctx context.Context, key string, order OrderPayload) error {
+func (rabbit *Rabbit) PublishOrder(ctx context.Context, key string, order db.OrderPayload) error {
 	body, err := json.Marshal(order)
 
 	if err != nil {
