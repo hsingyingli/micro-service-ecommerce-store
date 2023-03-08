@@ -17,7 +17,7 @@ const HomePage: NextPage<Props> = ({ products }) => {
       </div>
       <section className="flex flex-wrap gap-5 justify-start mt-10 p-2">
         {products.map((product) => (
-          <Link href={`/product/${product.id}`} key={product.id}>
+          <Link href={`/products/${product.id}`} key={product.id}>
             <ProductCard
               key={product.id}
               product={product}>

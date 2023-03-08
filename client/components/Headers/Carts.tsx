@@ -60,12 +60,11 @@ const CartMenu: React.FC = () => {
                             <CartItemCard item={product} />
                           </Link>
                         ))}
-                        <Link href="/carts/all" className="text-center underline">
+                        <Link href="/carts" className="text-center underline">
                           View All
                         </Link>
                       </>
                     }
-
                   </div>
                 </div>
               </Popover.Panel>

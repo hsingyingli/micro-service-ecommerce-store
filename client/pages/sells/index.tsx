@@ -49,7 +49,7 @@ const SellsPage: NextPage = () => {
           displayProducts.map((product) => (
             <ProductCard key={product.id} product={product}>
               <div className="flex flex-col sm:flex-row sm:justify-start justify-center gap-2 px-2 pb-1">
-                <Link href={`/product/${product.id}`}>
+                <Link href={`/products/${product.id}`}>
                   <ArrowTopRightOnSquareIcon
                     className="w-6 h-6 text-secondary-500 hover:text-secondary-700"
                   />
