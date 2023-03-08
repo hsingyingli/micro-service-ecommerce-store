@@ -15,7 +15,12 @@ export function middleware(request: NextRequest) {
   }
 
   // require Auth
-  if (request.nextUrl.pathname.startsWith('/sells') &&
+  if (
+    (
+      request.nextUrl.pathname.startsWith('/sells') ||
+      request.nextUrl.pathname.startsWith('/products') ||
+      request.nextUrl.pathname.startsWith('/carts')
+    ) &&
     !request.cookies.has('ecommerce-store-refresh-token')
   ) {
     const url = request.nextUrl.clone()
