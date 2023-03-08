@@ -35,7 +35,8 @@ func (store *Store) CreateCart(ctx context.Context, args CreateCartParam) (Cart,
 
 const listCarts = `
   SELECT c.id, c.pid, c.amount, p.title, p.price, p.image_name
-  FROM products as p, carts as c
+  FROM carts as c
+  JOIN products as p ON c.pid = p.id
   WHERE c.uid = $1
   ORDER BY c.created_at
 `
