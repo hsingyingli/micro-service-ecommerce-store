@@ -51,7 +51,7 @@ const ProductPage: NextPage<Props> = ({ product }) => {
   }
 
   return (
-    <div className="mt-10 p-5 grid grid-cols-1 md:grid-cols-2">
+    <div className="mt-10 p-5 grid grid-cols-1 md:grid-cols-2 gap-4">
       <div className="relative w-[min(100%,500px)] aspect-square overflow-hidden rounded-md">
         <Image
           fill alt={product.title} src={imageUrl} />
