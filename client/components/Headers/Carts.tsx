@@ -1,25 +1,33 @@
-import React, { Fragment } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import { Popover, Transition } from '@headlessui/react'
 import { useAuth } from "@/hooks/useAuth";
-import { ShoppingBagIcon } from '@heroicons/react/24/outline'
+import { ShoppingCartIcon } from '@heroicons/react/24/outline'
 import Link from "next/link";
 import { Tooltip } from "../Tooltip";
+import { useCart } from "@/hooks/useCart";
+import { TopRightNumber } from "../TopRightNumber";
+import { CartItemCard } from "../CartItemCard";
 
-const OrderMenu: React.FC = () => {
+const CartMenu: React.FC = () => {
   const { user } = useAuth()
+  const { products } = useCart()
   return (
     <div className="relative z-30">
       <Popover className="relative">
         {({ open }) => (
           <>
-            <Tooltip tip="Order list">
-              <Popover.Button className={`inline-flex w-full justify-center 
+            <Tooltip tip="Shopping Cart">
+              <TopRightNumber number={products.length}>
+                <Popover.Button className={`inline-flex w-full justify-center 
             rounded-md ${open ? "bg-secondary-500" : "bg-secondary-400"} p-2 hover:bg-secondary-500 transition-colors duration-150`}>
-                <ShoppingBagIcon
-                  className="h-5 w-5 text-violet-200 hover:text-violet-100"
-                  aria-hidden="true"
-                />
-              </Popover.Button>
+
+                  <ShoppingCartIcon
+                    className="h-5 w-5 text-violet-200 hover:text-violet-100"
+                    aria-hidden="true"
+                  />
+
+                </Popover.Button>
+              </TopRightNumber>
             </Tooltip>
             <Transition
               as={Fragment}
@@ -43,8 +51,15 @@ const OrderMenu: React.FC = () => {
                       </Link>
                       :
                       <>
-                        <div className="bg-red-200">Hello</div>
-                        <div>World</div>
+                        {products.map((product) => (
+                          <Link
+                            key={product.id}
+                            href={`/product/${product.id}`}
+                            className="h-14 w-full"
+                          >
+                            <CartItemCard item={product} />
+                          </Link>
+                        ))}
                       </>
                     }
 
@@ -64,5 +79,5 @@ const OrderMenu: React.FC = () => {
 }
 
 export {
-  OrderMenu
+  CartMenu
 }

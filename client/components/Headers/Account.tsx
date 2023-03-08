@@ -3,6 +3,7 @@ import { Menu, Transition } from '@headlessui/react'
 import { useAuth } from "@/hooks/useAuth";
 import { UserIcon } from '@heroicons/react/24/outline'
 import Link from "next/link";
+import { Tooltip } from "../Tooltip";
 
 const AccountMenu: React.FC = () => {
   const { user, logout } = useAuth()
@@ -10,13 +11,15 @@ const AccountMenu: React.FC = () => {
     <div>
       <Menu as="div" className="relative inline-block text-left">
         <div>
-          <Menu.Button className="inline-flex w-full justify-center 
+          <Tooltip tip="Account">
+            <Menu.Button className="inline-flex w-full justify-center 
             rounded-md bg-secondary-400 p-2 hover:bg-secondary-500 transition-colors duration-150">
-            <UserIcon
-              className="h-5 w-5 text-violet-200 hover:text-violet-100"
-              aria-hidden="true"
-            />
-          </Menu.Button>
+              <UserIcon
+                className="h-5 w-5 text-violet-200 hover:text-violet-100"
+                aria-hidden="true"
+              />
+            </Menu.Button>
+          </Tooltip>
         </div>
         <Transition
           as={Fragment}

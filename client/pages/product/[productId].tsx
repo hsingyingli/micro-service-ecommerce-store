@@ -58,7 +58,7 @@ const ProductPage: NextPage<Props> = ({ product }) => {
       </div>
       <div className="mt-10 md:mt-0">
         <h1 className='text-2xl md:text-4xl text-secondary-700 my-2'>{product.title}</h1>
-        <div className="mt-5">
+        <div className="mt-5 max-h-72 overflow-auto">
           <p className="text-secondary-600 break-words line-clamp-4">{product.description}</p>
         </div>
         <h2 className="text-xl font-medium md:text-3xl text-secondary-600 my-5">
@@ -96,6 +96,15 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
 
   const res = await axios.get(`http://localhost:9011/v1/product?id=${productId}`)
   const product = res.data
+
+  if (product === null) {
+    return {
+      props: {},
+      redirect: {
+        destination: "/"
+      }
+    }
+  }
 
   return {
     props: {

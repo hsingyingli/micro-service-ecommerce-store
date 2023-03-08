@@ -13,7 +13,7 @@ const HomePage: NextPage<Props> = ({ products }) => {
   return (
     <div className="mt-10">
       <div className="relative w-full aspect-[2/1] sm:aspect-[3/1] rounded-md overflow-hidden">
-        <Image src={"/assets/banner.png"} alt="banner" fill />
+        <Image src={"/assets/banner.png"} alt="banner" fill priority />
       </div>
       <section className="flex flex-wrap gap-5 justify-start mt-10 p-2">
         {products.map((product) => (

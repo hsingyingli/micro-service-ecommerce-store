@@ -32,34 +32,39 @@ interface Props {
 }
 
 const CartProvider: React.FC<Props> = ({ children }) => {
+  const [isFetch, setIsFetch] = useState(false)
   const [products, setProducts] = useState<Array<CartItem>>([])
   const axiosPrivate = useAxiosPrivate("cart")
   const { user } = useAuth()
   useEffect(() => {
     const fetchCart = async () => {
-      const res = await axiosPrivate.get("/v1/cart", {
-        headers: {
-          "Content-Type": "application/json"
-        }
-      })
-      console.log(res.data)
+      try {
+        const res = await axiosPrivate.get("/v1/cart", {
+          headers: {
+            "Content-Type": "application/json"
+          }
+        })
+        setProducts(res.data || [])
+      } catch (error) {
+        setProducts([])
+      } finally {
+        setIsFetch(true)
+      }
     }
 
     if (user === null) {
+      setIsFetch(false)
       setProducts([])
       return
     }
-
-    fetchCart()
+    if (!isFetch) {
+      fetchCart()
+    }
 
   }, [user])
 
-
   const addProduct = (item: CartItem) => {
-    setProducts((prev) => {
-      prev.push(item)
-      return prev
-    })
+    setProducts([...products, item])
   }
 
   const removeProduct = (id: number) => {
