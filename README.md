@@ -2,6 +2,8 @@
 --- 
 Simple ecommerce store app built with microservices-based architecture. Technical Stack includes golang(gin), react(nextjs, tailwindCSS), rabbitMQ, GRPC, and docker.
 
+![Client](./public/client.png)
+
 ## Table of contents
 * [Technical Stack](#technical-stack)
 * [Event flow](#event-flow)
@@ -50,10 +52,19 @@ docker-compose up -d --build
 make init_db
 ```
 
-4. Open client service and start
+4. Testing
+* Option1: Using Postman, [Endpoint](#api-endpoint)
+* Option2: Open client service and start
+```sh
+cd ./client 
+npm install 
+
+npm run dev
+# or 
+npm run build 
+npm run start
 ```
-http://localhost:3000
-```
+
 ## API Endpoint
 * Auth Service:
     |Method|ROUTE|
