@@ -20,7 +20,7 @@ const ProductCard: React.FC<Props> = ({ product, children }) => {
           fill alt={product.title} src={url} />
       </div>
       <div className="p-2 flex-grow">
-        <h1 className="text-2xl font-medium text-secondary-600">{product.title}</h1>
+        <h1 className="text-xl truncate font-medium text-secondary-600">{product.title}</h1>
         <p className="text-secondary-500 text-lg font-medium mt-2">NT$: {product.price}</p>
         <p className="text-secondary-500 text-md font-medium">Remaining: {product.amount}</p>
       </div>
