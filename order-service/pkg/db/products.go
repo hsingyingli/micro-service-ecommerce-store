@@ -6,7 +6,7 @@ import (
 )
 
 const getProductInfo = `
-  SELECT id, uid, price, amount 
+  SELECT amount, price, title, image_name
   FROM products 
   WHERE id = $1
 `
@@ -14,7 +14,7 @@ const getProductInfo = `
 func (store *Store) GetProductInfo(ctx context.Context, id int64) (ProductInfo, error) {
 	row := store.db.QueryRowContext(ctx, getProductInfo, id)
 	var product ProductInfo
-	err := row.Scan(&product.ID, &product.UID, &product.Price, &product.Amount)
+	err := row.Scan(&product.ID, &product.UID, &product.Price, &product.Amount, &product.ImageName)
 	return product, err
 }
 

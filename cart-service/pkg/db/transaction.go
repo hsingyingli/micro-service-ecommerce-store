@@ -30,19 +30,16 @@ const deleteBatchCart = `
   WHERE uid = $1 AND id in (%s)
 `
 
-func (store *Store) DeleteBatchCartTx(ctx context.Context, order OrderPayload) error {
+func (store *Store) DeleteBatchCartTx(ctx context.Context, cids []int64, uid int64) error {
 	err := store.execTx(ctx, func(tx *sql.Tx) error {
 		var err error
-		cids := []int64{}
-		for _, item := range order.Items {
-			cids = append(cids, item.CID)
-		}
 
 		placeholder := make([]string, len(cids))
-		values := make([]interface{}, len(cids))
+		values := make([]interface{}, len(cids)+1)
+		values[0] = uid
 		for i, id := range cids {
 			placeholder[i] = fmt.Sprintf("$%d", i+2)
-			values[i] = id
+			values[i+1] = id
 		}
 
 		query := fmt.Sprintf(deleteBatchCart, strings.Join(placeholder, ","))

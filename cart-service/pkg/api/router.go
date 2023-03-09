@@ -14,6 +14,7 @@ func (server *Server) setupRouter() {
 			cart.POST("", server.CreateCart)
 			cart.PATCH("", server.UpdateCart)
 			cart.DELETE("", server.DeleteCartById)
+			cart.DELETE("/batch", server.DeleteBatchCart)
 		}
 	}
 }

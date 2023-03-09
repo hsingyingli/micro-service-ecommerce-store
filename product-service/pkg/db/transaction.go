@@ -21,8 +21,6 @@ const updateProductAmount = `
   RETURNING id, uid, amount, price
 `
 
-
-
 func (store *Store) UpdateInventoryStatuTx(ctx context.Context, order OrderPayload, a int64, n int64) ([]ProductPayload, error) {
 	var products []ProductPayload
 	err := store.execTx(ctx, func(tx *sql.Tx) error {

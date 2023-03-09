@@ -30,6 +30,7 @@ type OrderItemDetail struct {
 	PID       int64  `json:"pid"`
 	Amount    int64  `json:"amount"`
 	Price     int64  `json:"price"`
+	Title     string `json:"title"`
 	ImageName string `json:"image_name"`
 }
 

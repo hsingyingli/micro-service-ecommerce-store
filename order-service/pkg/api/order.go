@@ -8,8 +8,19 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+func (server *Server) ListOrders(ctx *gin.Context) {
+	user := ctx.MustGet(authorizationPayloadKey).(*User)
+	payloadList, err := server.store.ListOrderInfo(ctx, user.Id)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, payloadList)
+}
+
 type CreateOrderRequest struct {
 	Items []db.CreateOrderItemParam `json:"items" binding:"required"`
+	CIDs  []int64                   `json:"cids"`
 }
 
 func (server *Server) CreateOrder(ctx *gin.Context) {
@@ -29,6 +40,10 @@ func (server *Server) CreateOrder(ctx *gin.Context) {
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
+	}
+
+	if req.CIDs != nil {
+		err = server.rabbit.PublishDeleteCart(ctx, "order.create.deletecart", req.CIDs, user.Id)
 	}
 
 	err = server.rabbit.PublishOrder(ctx, "order.create", orderPayload)

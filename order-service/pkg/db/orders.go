@@ -3,8 +3,9 @@ package db
 import "context"
 
 const getOrderInfo = `
-  SELECT oi.pid, oi.amount
+  SELECT oi.id, oi.pid, oi.amount, p.price, p.title, p.image_name
   FROM order_items as oi
+  JOIN products as p ON oi.pid = p.id
   WHERE oid = (
     SELECT id 
     FROM orders
@@ -26,9 +27,10 @@ func (store *Store) GetOrderInfo(ctx context.Context, oid int64, uid int64) (pay
 
 	for rows.Next() {
 		var i OrderItemDetail
-		if err = rows.Scan(&i.PID, &i.Amount); err != nil {
+		if err = rows.Scan(&i.ID, &i.PID, &i.Amount, &i.Price, &i.Title, &i.ImageName); err != nil {
 			return
 		}
+		i.OID = oid
 		items = append(items, i)
 	}
 	if err = rows.Close(); err != nil {
@@ -41,6 +43,46 @@ func (store *Store) GetOrderInfo(ctx context.Context, oid int64, uid int64) (pay
 
 	payload.Items = items
 	return payload, nil
+}
+
+const listOrder = `
+  SELECT id 
+  FROM orders 
+  WHERE uid = $1 AND status = 'WAIT'
+`
+
+func (store *Store) ListOrderInfo(ctx context.Context, uid int64) ([]OrderPayload, error) {
+	rows, err := store.db.QueryContext(ctx, listOrder, uid)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var orderId []int64
+
+	for rows.Next() {
+		var i int64
+		if err := rows.Scan(&i); err != nil {
+			return nil, err
+		}
+		orderId = append(orderId, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	var payloadList []OrderPayload
+	for _, i := range orderId {
+		payload, err := store.GetOrderInfo(ctx, i, uid)
+		if err != nil {
+			return nil, err
+		}
+		payloadList = append(payloadList, payload)
+	}
+	return payloadList, nil
 }
 
 const updateOrderStatus = `

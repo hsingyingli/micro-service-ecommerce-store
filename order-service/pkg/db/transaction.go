@@ -16,12 +16,6 @@ const createOrder = `
   RETURNING id
 `
 
-const getProductAmountPrice = `
-  SELECT amount, price 
-  FROM products
-  WHERE id = $1
-`
-
 const createOrderItem = `
   INSERT INTO order_items (
     oid, pid, amount
@@ -63,8 +57,8 @@ func (store *Store) CreateOrderTx(ctx context.Context, args CreateOrderTxParam) 
 			itemDetail.OID = orderPayload.ID
 			itemDetail.Amount = item.Amount
 
-			row := tx.QueryRowContext(ctx, getProductAmountPrice, item.PID)
-			err = row.Scan(&remaining, &itemDetail.Price)
+			row := tx.QueryRowContext(ctx, getProductInfo, item.PID)
+			err = row.Scan(&remaining, &itemDetail.Price, &itemDetail.Title, &itemDetail.ImageName)
 			if err != nil {
 				return err
 			}

@@ -14,10 +14,11 @@ type Product struct {
 }
 
 type ProductInfo struct {
-	ID     int64 `json:"id"`
-	UID    int64 `json:"uid"`
-	Price  int64 `json:"price"`
-	Amount int64 `json:"amount"`
+	ID        int64  `json:"id"`
+	UID       int64  `json:"uid"`
+	Price     int64  `json:"price"`
+	Amount    int64  `json:"amount"`
+	ImageName string `json:"image_name"`
 }
 
 type ProductPayload struct {
@@ -60,6 +61,7 @@ type OrderItemDetail struct {
 	PID       int64  `json:"pid"`
 	Amount    int64  `json:"amount"`
 	Price     int64  `json:"price"`
+	Title     string `json:"title"`
 	ImageName string `json:"image_name"`
 }
 

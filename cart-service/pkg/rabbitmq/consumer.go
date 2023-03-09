@@ -137,3 +137,60 @@ func (rabbit *Rabbit) ListenOnProduct() error {
 
 	return err
 }
+
+func (rabbit *Rabbit) ListenOnOrder() error {
+	err := rabbit.Consumer.ExchangeDeclare(
+		"order_topic", // name
+		"topic",       // type
+		true,          // durable
+		false,         // auto-deleted
+		false,         // internal
+		false,         // no-wait
+		nil,           // arguments
+	)
+
+	q, err := rabbit.Consumer.QueueDeclare(
+		"",    // name
+		true,  // durable
+		false, // delete when unused
+		false, // exclusive
+		false, // no-wait
+		nil,   // arguments
+	)
+
+	err = rabbit.Consumer.QueueBind(
+		q.Name,                    // queue name
+		"order.create.deletecart", // routing key
+		"order_topic",             // exchange
+		false,
+		nil)
+
+	msgs, err := rabbit.Consumer.Consume(
+		q.Name, // queue
+		"",     // consumer
+		true,   // auto ack
+		false,  // exclusive
+		false,  // no local
+		false,  // no wait
+		nil,    // args
+	)
+
+	go func() {
+		for d := range msgs {
+			var err error
+			var payload BatchCartPayload
+			err = json.Unmarshal(d.Body, &payload)
+			if err != nil {
+				log.Println(err)
+				continue
+			}
+
+			log.Println("Message receive: " + d.RoutingKey)
+			err = rabbit.ConsumeDeleteBatchCart(payload)
+
+			log.Println(err)
+		}
+	}()
+
+	return err
+}

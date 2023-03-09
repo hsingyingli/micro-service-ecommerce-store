@@ -131,3 +131,24 @@ func (server *Server) DeleteCartById(ctx *gin.Context) {
 	}
 	ctx.JSON(http.StatusNoContent, gin.H{})
 }
+
+type DeleteBatchCartRequest struct {
+	CIDs []int64 `json:"cids" binding:"required"`
+}
+
+func (server *Server) DeleteBatchCart(ctx *gin.Context) {
+	user := ctx.MustGet(authorizationPayloadKey).(*User)
+	var req DeleteBatchCartRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	err := server.store.DeleteBatchCartTx(ctx, req.CIDs, user.Id)
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusAccepted, gin.H{})
+}
