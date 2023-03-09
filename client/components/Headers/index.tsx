@@ -17,9 +17,7 @@ const Header: React.FC = () => {
         </Link>
         <div className="flex items-center gap-4">
           {/* Sell */}
-          <Tooltip tip="Sell Product">
-            <SellsLink />
-          </Tooltip>
+          <SellsLink />
           <CartMenu />
           {/* Order */}
           <OrderMenu />

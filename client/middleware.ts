@@ -19,7 +19,8 @@ export function middleware(request: NextRequest) {
     (
       request.nextUrl.pathname.startsWith('/sells') ||
       request.nextUrl.pathname.startsWith('/products') ||
-      request.nextUrl.pathname.startsWith('/carts')
+      request.nextUrl.pathname.startsWith('/carts') ||
+      request.nextUrl.pathname.startsWith('/orders')
     ) &&
     !request.cookies.has('ecommerce-store-refresh-token')
   ) {
@@ -33,5 +34,5 @@ export function middleware(request: NextRequest) {
 
 // See "Matching Paths" below to learn more
 export const config = {
-  matcher: ['/signup', '/login', '/sells/:path*'],
+  matcher: ['/signup', '/login', '/sells/:path*', '/carts/:path*', '/products/:path*', '/orders/:path*'],
 }

@@ -17,12 +17,14 @@ interface CartContextInterface {
   products: Array<CartItem>
   addProduct: (item: CartItem) => void
   removeProduct: (id: number) => void
+  removeBatchProducts: (ids: Array<number>) => void
 }
 
 const initState: CartContextInterface = {
   products: [],
   addProduct: (item: CartItem) => { },
-  removeProduct: (id: number) => { }
+  removeProduct: (id: number) => { },
+  removeBatchProducts: (ids: Array<number>) => { }
 }
 
 const CartContext = createContext<CartContextInterface>(initState)
@@ -71,8 +73,13 @@ const CartProvider: React.FC<Props> = ({ children }) => {
     setProducts((prev) => prev.filter((product) => product.id !== id))
   }
 
+  const removeBatchProducts = (ids: Array<number>) => {
+    const newProducts = products.filter((product) => !ids.includes(product.id))
+    setProducts(newProducts)
+  }
+
   return (
-    <CartContext.Provider value={{ products, addProduct, removeProduct }}>
+    <CartContext.Provider value={{ products, addProduct, removeProduct, removeBatchProducts }}>
       {children}
     </CartContext.Provider>
   )

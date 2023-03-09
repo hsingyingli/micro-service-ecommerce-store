@@ -1,5 +1,5 @@
-import { useImageUrl } from "@/hooks/useImageUrl";
 import { Product } from "@/store/providers/SellProvider";
+import { getImageUrl } from "@/utils/image";
 import Image from "next/image";
 import React from "react";
 
@@ -9,7 +9,7 @@ interface Props {
 }
 
 const ProductCard: React.FC<Props> = ({ product, children }) => {
-  const url = useImageUrl(product.image_name)
+  const url = getImageUrl(product.image_name)
   return (
     <div className="rounded-md border-2 border-primary-500 overflow-hidden
                hover:shadow-xl hover:shadow-primary-500 flex flex-row sm:flex-col

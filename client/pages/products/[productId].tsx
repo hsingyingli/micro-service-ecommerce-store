@@ -1,9 +1,9 @@
 import { useAuth } from "@/hooks/useAuth";
 import useAxiosPrivate from "@/hooks/useAxiosPrivate";
 import { useCart } from "@/hooks/useCart";
-import { useImageUrl } from "@/hooks/useImageUrl";
 import { CartItem } from "@/store/providers/CartProvider";
 import { Product } from "@/store/providers/SellProvider";
+import { getImageUrl } from "@/utils/image";
 import axios from "axios";
 import { GetStaticProps, NextPage } from "next";
 import Image from "next/image";
@@ -20,7 +20,7 @@ const ProductPage: NextPage<Props> = ({ product }) => {
   const [amount, setAmount] = useState("")
   const router = useRouter()
   const axiosPrivate = useAxiosPrivate("cart")
-  const imageUrl = useImageUrl(product.image_name)
+  const imageUrl = getImageUrl(product.image_name)
   const { addProduct } = useCart()
 
   const handleAddCart = async (e: React.FormEvent) => {
@@ -42,6 +42,8 @@ const ProductPage: NextPage<Props> = ({ product }) => {
       })
       addProduct({
         ...res.data,
+        title: product.title,
+        price: product.price,
         image_name: product.image_name
       } as CartItem)
       toast.success("Success")

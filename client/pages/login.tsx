@@ -65,9 +65,9 @@ const LoginPage: NextPage = () => {
       </form>
       <p className="text-gray-600 relative">New?</p>
       <Link href="/signup"
-        className="text-md py-2 px-4 bg-secondary-50 hover:bg-secondary-200 transition-colors duration-150 mt-4 rounded-md"
+        className="text-md py-2 px-4 bg-secondary-100 hover:bg-secondary-200 transition-colors duration-150 mt-4 rounded-md"
       >
-        Create your Amazon account
+        Create account!
       </Link>
     </div>
   )

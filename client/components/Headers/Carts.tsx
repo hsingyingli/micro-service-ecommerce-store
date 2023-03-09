@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useState } from "react";
+import React, { Fragment } from "react";
 import { Popover, Transition } from '@headlessui/react'
 import { useAuth } from "@/hooks/useAuth";
 import { ShoppingCartIcon } from '@heroicons/react/24/outline'
@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Tooltip } from "../Tooltip";
 import { useCart } from "@/hooks/useCart";
 import { TopRightNumber } from "../TopRightNumber";
-import { CartItemCard } from "../CartItemCard";
+import { ItemCard } from "../ItemCard";
 
 const CartMenu: React.FC = () => {
   const { user } = useAuth()
@@ -54,10 +54,10 @@ const CartMenu: React.FC = () => {
                         {products.map((product) => (
                           <Link
                             key={product.id}
-                            href={`/product/${product.id}`}
+                            href={`/products/${product.pid}`}
                             className="h-14 w-full rounded-md hover:bg-secondary-50"
                           >
-                            <CartItemCard item={product} />
+                            <ItemCard item={product} />
                           </Link>
                         ))}
                         <Link href="/carts" className="text-center underline">
