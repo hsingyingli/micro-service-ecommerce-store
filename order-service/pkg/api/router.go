@@ -3,7 +3,7 @@ package api
 func (server *Server) setupRouter() {
 
 	// handle cors
-	server.router.Use(GinMiddleware("http://localhost:3000"))
+	server.router.Use(GinMiddleware(server.config.ALLOW_ORIGIN))
 	v1 := server.router.Group("/v1")
 	{
 		order := v1.Group("/order")

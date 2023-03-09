@@ -61,8 +61,7 @@ const CartsPage: NextPage = () => {
     })
 
     try {
-      console.log(items)
-      const res = await axiosOrder.post("/v1/order", { items }, { headers: { "Content-Type": "application/json" } })
+      const res = await axiosOrder.post("/v1/order", { items, cids: checkedState }, { headers: { "Content-Type": "application/json" } })
       removeBatchProducts(checkedState)
       setCheckedState([])
       setSelectAll(false)

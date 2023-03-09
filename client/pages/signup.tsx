@@ -28,6 +28,7 @@ const SignUpPage: NextPage = () => {
       router.push("/login")
       return
     }
+    console.log(error)
     toast.error('Fail to Create Account', {
       id: toastId,
     });

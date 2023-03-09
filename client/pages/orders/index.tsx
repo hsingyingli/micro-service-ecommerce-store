@@ -9,12 +9,13 @@ import { toast } from "react-hot-toast"
 
 const OrderPage: NextPage = () => {
   const { orders, removeOrder } = useOrder()
-  const axiosPrivate = useAxiosPrivate("payment")
-
+  const axiosPayment = useAxiosPrivate("payment")
+  const axiosOrder = useAxiosPrivate("order")
+  console.log(orders)
   const handlePayment = async (oid: number) => {
     const toastId = toast.loading("...")
     try {
-      await axiosPrivate.post("/v1/payment", { oid }, { headers: { "Content-Type": "application/json" } })
+      await axiosPayment.post("/v1/payment", { oid }, { headers: { "Content-Type": "application/json" } })
       removeOrder(oid)
       toast.success("Success", { id: toastId })
     } catch (error) {
@@ -23,7 +24,18 @@ const OrderPage: NextPage = () => {
     }
   }
 
-  console.log(orders)
+  const handleDeleteOrder = async (oid: number) => {
+    const toastId = toast.loading("...")
+    try {
+      await axiosOrder.delete(`/v1/order?id=${oid}`)
+      removeOrder(oid)
+      toast.success("Success", { id: toastId })
+    } catch (error) {
+      console.log(error)
+      toast.error("Fail", { id: toastId })
+    }
+  }
+
   return (
     <div className="w-full px-4 pt-16">
       <div className="mx-auto w-full max-w-xl rounded-2xl bg-white p-2">
@@ -42,7 +54,7 @@ const OrderPage: NextPage = () => {
                       <span>In total: $ {total}</span>
                       <ChevronUpIcon
                         className={`${open ? 'rotate-180 transform' : ''
-                          } h-5 w-5 text-purple-500`}
+                          } h-5 w-5 text-primary-900`}
                       />
                     </Disclosure.Button>
                     <Disclosure.Panel className="px-4 pt-4 pb-2 text-sm text-gray-500">
@@ -60,7 +72,11 @@ const OrderPage: NextPage = () => {
                         ))
                       }
                       <hr className="border-primary-500" />
-                      <div className="my-2 flex justify-end">
+                      <div className="my-2 flex justify-end gap-2">
+                        <button
+                          onClick={() => handleDeleteOrder(order.id)}
+                          className="text-md py-2 px-4 bg-secondary-300 hover:bg-secondary-200 transition-colors duration-150 mt-4 rounded-md"
+                        >Delete</button>
                         <button
                           onClick={() => handlePayment(order.id)}
                           className="text-md py-2 px-4 bg-secondary-100 hover:bg-secondary-200 transition-colors duration-150 mt-4 rounded-md"

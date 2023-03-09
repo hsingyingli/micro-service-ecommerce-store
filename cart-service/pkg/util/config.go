@@ -5,14 +5,15 @@ import (
 )
 
 type Config struct {
-	DB_NAME     string `mapstructure:"DB_NAME"`
-	DB_USERNAME string `mapstructure:"DB_USERNAME"`
-	DB_PASSWORD string `mapstructure:"DB_PASSWORD"`
-	DB_DATABASE string `mapstructure:"DB_DATABASE"`
-	DB_URL      string `mapstructure:"DB_URL"`
-	PORT        string `mapstructure:"PORT"`
-	GRPC_URL    string `mapstructure:"GRPC_URL"`
-	RABBIT_URL  string `mapstructure:"RABBIT_URL"`
+	DB_NAME      string `mapstructure:"DB_NAME"`
+	DB_USERNAME  string `mapstructure:"DB_USERNAME"`
+	DB_PASSWORD  string `mapstructure:"DB_PASSWORD"`
+	DB_DATABASE  string `mapstructure:"DB_DATABASE"`
+	DB_URL       string `mapstructure:"DB_URL"`
+	PORT         string `mapstructure:"PORT"`
+	GRPC_URL     string `mapstructure:"GRPC_URL"`
+	RABBIT_URL   string `mapstructure:"RABBIT_URL"`
+	ALLOW_ORIGIN string `mapstructure:"ALLOW_ORIGIN"`
 }
 
 func LoadConfig(path string) (Config, error) {

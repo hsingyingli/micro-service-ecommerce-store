@@ -47,15 +47,6 @@ const AccountMenu: React.FC = () => {
                   : (
                     <>
                       <Menu.Item>
-                        <Link
-                          href={"/Profile"}
-                          className="flex w-full items-center rounded-md p-2 
-                      hover:bg-secondary-50"
-                        >
-                          Profile
-                        </Link>
-                      </Menu.Item>
-                      <Menu.Item>
                         <button
                           onClick={logout}
                           className="flex w-full items-center rounded-md p-2 

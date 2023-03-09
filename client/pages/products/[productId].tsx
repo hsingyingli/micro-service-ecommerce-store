@@ -95,8 +95,9 @@ const ProductPage: NextPage<Props> = ({ product }) => {
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
   const productId = params?.productId
+  const baseUrl = process.env.NEXT_PUBLIC_PRODUCT_BASE_URL || ""
 
-  const res = await axios.get(`http://localhost:9011/v1/product?id=${productId}`)
+  const res = await axios.get(`${baseUrl}/v1/product?id=${productId}`)
   const product = res.data
 
   if (product === null) {
@@ -117,8 +118,12 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
 }
 
 export async function getStaticPaths() {
-  const res = await axios.get('http://localhost:9011/v1/product/all?limit=50')
-  const products: Array<Product> = res.data
+  const baseUrl = process.env.NEXT_PUBLIC_PRODUCT_BASE_URL || ""
+  let products: Array<Product> = []
+  try {
+    const res = await axios.get(`${baseUrl}/v1/product/all?limit=50`)
+    products = res.data
+  } catch (error) { console.log(error) }
 
   const paths = products.map((product) => ({
     params: { productId: product.id.toString() },

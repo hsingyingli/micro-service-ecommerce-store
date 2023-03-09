@@ -38,13 +38,12 @@ const SellsPage: NextPage = () => {
   return (
     <div className="p-2">
       <h1 className="text-4xl text-secondary-500 font-medium my-10">Experience Hassle-Free Online Selling</h1>
-      <div className="flex justify-between">
+      <div className="flex justify-between flex-col sm:flex-row gap-2">
         <input className="py-1 px-2 rounded" placeholder="Search" value={searchText} onChange={(e) => setSearchText(e.target.value)} />
         <Link href={"/sells/create"} className="text-white py-1 px-4 rounded
           bg-primary-700 hover:bg-primary-800 transition-colors duration-150">Create</Link>
       </div>
       <div className="mt-10 flex gap-5 flex-wrap">
-
         {
           displayProducts.map((product) => (
             <ProductCard key={product.id} product={product}>

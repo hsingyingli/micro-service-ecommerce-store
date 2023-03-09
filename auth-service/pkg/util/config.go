@@ -18,6 +18,7 @@ type Config struct {
 	REFRESH_TOKEN_DURATION time.Duration `mapstructure:"REFRESH_TOKEN_DURATION"`
 	GRPC_PORT              string        `mapstructure:"GRPC_PORT"`
 	RABBIT_URL             string        `mapstructure:"RABBIT_URL"`
+	ALLOW_ORIGIN           string        `mapstructure:"ALLOW_ORIGIN"`
 }
 
 func LoadConfig(path string) (Config, error) {
